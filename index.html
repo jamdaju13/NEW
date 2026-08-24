@@ -4168,6 +4168,7 @@
         });
 
         listenForChallenges();
+        listenForChallengeDeclines();
     }
 
     // ── PLAYER CHALLENGES: lets one online player challenge another directly
@@ -4183,9 +4184,25 @@
         window.firebaseOnValue(challengeRef, (snapshot) => {
             if (!snapshot.exists()) return;
             const data = snapshot.val();
-            incomingChallenge = { roomId: data.roomId };
+            incomingChallenge = { roomId: data.roomId, fromKey: data.fromKey };
             document.getElementById('challenge-from-name').textContent = (data.fromUsername || 'Someone') + ' challenges you!';
             document.getElementById('challenge-overlay').style.display = 'flex';
+        });
+    }
+
+    // ── Notifies the challenger automatically when the challenged player
+    // clicks "No", so the challenger's waiting layer is cancelled without
+    // requiring them to click Cancel themselves. ──
+    function listenForChallengeDeclines() {
+        if (!myPresenceRef) return;
+        const declineRef = window.firebaseRef(window.firebaseDB, 'challengeDeclined/' + myPresenceRef.key);
+        window.firebaseOnValue(declineRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+            const data = snapshot.val();
+            if (outgoingChallengeTargetKey && data.roomId === currentRoomId) {
+                window.firebaseRemove(declineRef);
+                cancelChallengeRequest();
+            }
         });
     }
 
@@ -4232,6 +4249,12 @@
         if (!incomingChallenge) return;
         document.getElementById('challenge-overlay').style.display = 'none';
         await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key));
+        if (incomingChallenge.fromKey) {
+            await window.firebaseSet(window.firebaseRef(window.firebaseDB, 'challengeDeclined/' + incomingChallenge.fromKey), {
+                roomId: incomingChallenge.roomId,
+                timestamp: Date.now()
+            });
+        }
         incomingChallenge = null;
     }
 
