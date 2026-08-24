@@ -1419,6 +1419,53 @@
         border-color: #f44336;
     }
 
+    #challenge-waiting-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 2100;
+        backdrop-filter: blur(10px);
+    }
+
+    #challenge-waiting-overlay.show {
+        display: flex;
+    }
+
+    .challenge-waiting-text {
+        font-size: 18px;
+        font-weight: 500;
+        letter-spacing: 3px;
+        color: #b0b0b0;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+    }
+
+    .cancel-challenge-btn {
+        padding: 14px 40px;
+        background: linear-gradient(135deg, #424242 0%, #1a1a1a 100%);
+        color: #ffffff;
+        border: 2px solid #d32f2f;
+        border-radius: 50px;
+        font-size: 14px;
+        font-family: inherit;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(211, 47, 47, 0.3);
+    }
+
+    .cancel-challenge-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(211, 47, 47, 0.5);
+        border-color: #f44336;
+    }
+
     @media (max-width: 768px) {
         .rematch-container {
             padding: 40px 30px;
@@ -3856,6 +3903,12 @@
         </div>
     </div>
 
+    <!-- Challenge waiting overlay: shown to the player who sent a challenge from the Online Players layer, on top of the first page -->
+    <div id="challenge-waiting-overlay">
+        <div class="challenge-waiting-text">Waiting...</div>
+        <button class="cancel-challenge-btn" onclick="cancelChallengeRequest()">Cancel</button>
+    </div>
+
     <div id="winner-screen">
         <div class="trophy-icon">🏆</div>
         <div class="winner-username" id="winner-username">PLAYER</div>
@@ -4122,6 +4175,7 @@
     // a challenge entry keyed by the target's presence id; the target is
     // notified live and, if accepted, joins that room to play together. ──
     let incomingChallenge = null;
+    let outgoingChallengeTargetKey = null;
 
     function listenForChallenges() {
         if (!myPresenceRef) return;
@@ -4138,14 +4192,27 @@
     async function challengePlayer(targetKey) {
         if (!myPresenceRef || targetKey === myPresenceRef.key) return;
         closeOnlinePlayersModal();
-        document.getElementById('start-screen').classList.add('hidden');
+        outgoingChallengeTargetKey = targetKey;
         await hostGame();
+        document.getElementById('host-join-screen').classList.remove('show');
+        document.getElementById('host-lobby-screen').classList.remove('show');
+        document.getElementById('challenge-waiting-overlay').classList.add('show');
         await window.firebaseSet(window.firebaseRef(window.firebaseDB, 'challenges/' + targetKey), {
             fromUsername: player1Username || 'Guest',
             fromKey: myPresenceRef.key,
             roomId: currentRoomId,
             timestamp: Date.now()
         });
+    }
+
+    async function cancelChallengeRequest() {
+        document.getElementById('challenge-waiting-overlay').classList.remove('show');
+        if (outgoingChallengeTargetKey) {
+            await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + outgoingChallengeTargetKey));
+            outgoingChallengeTargetKey = null;
+        }
+        await leaveHostLobby();
+        document.getElementById('host-join-screen').classList.remove('show');
     }
 
     async function acceptChallenge() {
@@ -5865,6 +5932,9 @@
         gameEnded = false;
         gameStartTime = Date.now();
         setPresenceInGame(true);
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('challenge-waiting-overlay').classList.remove('show');
+        outgoingChallengeTargetKey = null;
         document.getElementById('host-lobby-screen').classList.remove('show');
         document.getElementById('join-lobby-screen').classList.remove('show');
         if (myPlayerNumber === 2) {
@@ -6936,6 +7006,7 @@
     window.openOnlinePlayersModal = openOnlinePlayersModal;
     window.closeOnlinePlayersModal = closeOnlinePlayersModal;
     window.challengePlayer = challengePlayer;
+    window.cancelChallengeRequest = cancelChallengeRequest;
     window.acceptChallenge = acceptChallenge;
     window.declineChallenge = declineChallenge;
     window.switchTab = switchTab;
