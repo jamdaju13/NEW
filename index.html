@@ -2458,6 +2458,7 @@
         align-items: center;
         gap: 14px;
         transition: all 0.3s ease;
+        cursor: pointer;
     }
 
     .online-player-item:active {
@@ -2507,6 +2508,65 @@
         letter-spacing: 1px;
         color: #FFD700;
         flex-shrink: 0;
+    }
+
+    #challenge-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 3000;
+        padding: 20px;
+        text-align: center;
+    }
+
+    #challenge-overlay h1 {
+        font-size: 24px;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        font-weight: 300;
+        margin-bottom: 32px;
+    }
+
+    .challenge-buttons {
+        display: flex;
+        gap: 20px;
+    }
+
+    .challenge-buttons button {
+        border: none;
+        padding: 14px 40px;
+        font-size: 14px;
+        font-family: inherit;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-radius: 999px;
+    }
+
+    .challenge-yes-btn {
+        background: linear-gradient(135deg, #795548 0%, #4E342E 100%);
+        color: #ffffff;
+    }
+
+    .challenge-no-btn {
+        background: transparent;
+        color: #ffffff;
+        border: 1px solid #ffffff !important;
+    }
+
+    .challenge-yes-btn:hover {
+        transform: translateY(-2px);
+    }
+
+    .challenge-no-btn:hover {
+        background: #ffffff;
+        color: #000000;
     }
 
     /* ── PODIUM (Top 3) ── */
@@ -3689,6 +3749,14 @@
         </div>
     </div>
 
+    <div id="challenge-overlay">
+        <h1 id="challenge-from-name">Someone challenges you!</h1>
+        <div class="challenge-buttons">
+            <button class="challenge-yes-btn" onclick="acceptChallenge()">Yes</button>
+            <button class="challenge-no-btn" onclick="declineChallenge()">No</button>
+        </div>
+    </div>
+
     <div id="host-join-screen" onclick="handleSpectateTap()">
         <h1 class="start-title">GOODLUCK!</h1>
         <div class="player-username-display" id="display-username"></div>
@@ -4042,9 +4110,62 @@
             const data = snapshot.exists() ? snapshot.val() : {};
             const count = Object.keys(data).length;
             if (onlineIndicatorEl) onlineIndicatorEl.textContent = 'ONLINE: ' + count;
-            onlinePresenceList = Object.values(data).map(p => ({ username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame) }));
+            onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame) }));
             renderOnlinePlayersList();
         });
+
+        listenForChallenges();
+    }
+
+    // ── PLAYER CHALLENGES: lets one online player challenge another directly
+    // from the Online Players layer. The challenger hosts a room and writes
+    // a challenge entry keyed by the target's presence id; the target is
+    // notified live and, if accepted, joins that room to play together. ──
+    let incomingChallenge = null;
+
+    function listenForChallenges() {
+        if (!myPresenceRef) return;
+        const challengeRef = window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key);
+        window.firebaseOnValue(challengeRef, (snapshot) => {
+            if (!snapshot.exists()) return;
+            const data = snapshot.val();
+            incomingChallenge = { roomId: data.roomId };
+            document.getElementById('challenge-from-name').textContent = (data.fromUsername || 'Someone') + ' challenges you!';
+            document.getElementById('challenge-overlay').style.display = 'flex';
+        });
+    }
+
+    async function challengePlayer(targetKey) {
+        if (!myPresenceRef || targetKey === myPresenceRef.key) return;
+        closeOnlinePlayersModal();
+        document.getElementById('start-screen').classList.add('hidden');
+        await hostGame();
+        await window.firebaseSet(window.firebaseRef(window.firebaseDB, 'challenges/' + targetKey), {
+            fromUsername: player1Username || 'Guest',
+            fromKey: myPresenceRef.key,
+            roomId: currentRoomId,
+            timestamp: Date.now()
+        });
+    }
+
+    async function acceptChallenge() {
+        if (!incomingChallenge) return;
+        const roomId = incomingChallenge.roomId;
+        document.getElementById('challenge-overlay').style.display = 'none';
+        await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key));
+        incomingChallenge = null;
+        document.getElementById('start-screen').classList.add('hidden');
+        document.getElementById('room-id-input').value = roomId;
+        isHost = false;
+        myPlayerNumber = 2;
+        await attemptJoinRoom();
+    }
+
+    async function declineChallenge() {
+        if (!incomingChallenge) return;
+        document.getElementById('challenge-overlay').style.display = 'none';
+        await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key));
+        incomingChallenge = null;
     }
 
     // ── USERNAME RESET LISTENER: when the admin clicks "Delete All Usernames",
@@ -4085,7 +4206,7 @@
         if (onlinePresenceList.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
         }
     }
 
@@ -4094,7 +4215,7 @@
         if (onlinePresenceList.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
         }
         document.getElementById('online-players-modal').classList.add('show');
     }
@@ -6814,6 +6935,9 @@
     window.closeLeaderboardModal = closeLeaderboardModal;
     window.openOnlinePlayersModal = openOnlinePlayersModal;
     window.closeOnlinePlayersModal = closeOnlinePlayersModal;
+    window.challengePlayer = challengePlayer;
+    window.acceptChallenge = acceptChallenge;
+    window.declineChallenge = declineChallenge;
     window.switchTab = switchTab;
     window.addLeaderboardEntry = addLeaderboardEntry;
     window.deleteAllLeaderboard = deleteAllLeaderboard;
