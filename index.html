@@ -4163,8 +4163,22 @@
     function initOnlinePresence() {
         const presenceRef = window.firebaseRef(window.firebaseDB, 'presence');
         myPresenceRef = window.firebasePush(presenceRef);
-        window.firebaseSet(myPresenceRef, { username: player1Username || 'Guest', inGame: false, onFirstPage: true });
-        window.firebaseOnDisconnect(myPresenceRef).remove();
+
+        // ── Tie this client's presence entry to Firebase's own live connection
+        // state ('.info/connected') instead of writing it once at load time.
+        // This special location fires true every time this client's socket is
+        // actually connected — including after a dropped/flaky connection
+        // reconnects — so the presence record is (re)written and
+        // onDisconnect().remove() is re-armed on the CURRENT connection each
+        // time. That keeps the Online Players list based on real, current
+        // connection/activity instead of a stale write from a connection that
+        // may no longer be alive. ──
+        const connectedRef = window.firebaseRef(window.firebaseDB, '.info/connected');
+        window.firebaseOnValue(connectedRef, (connSnapshot) => {
+            if (connSnapshot.val() !== true) return;
+            window.firebaseOnDisconnect(myPresenceRef).remove();
+            window.firebaseSet(myPresenceRef, { username: player1Username || 'Guest', inGame: isPlayerCurrentlyInGame, onFirstPage: isOnFirstPage() });
+        });
 
         window.firebaseOnValue(presenceRef, (snapshot) => {
             const data = snapshot.exists() ? snapshot.val() : {};
