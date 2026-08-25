@@ -4344,7 +4344,7 @@
         if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
         }
     }
 
@@ -4354,7 +4354,7 @@
         if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
         }
         document.getElementById('online-players-modal').classList.add('show');
     }
