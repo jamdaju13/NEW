@@ -707,6 +707,20 @@
         margin-left: 6px;
     }
 
+    #online-indicator {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 2001;
+        background: rgba(26, 26, 26, 0.85);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
     /* ── PLAYER PROFILE BUBBLE: shown above the left side of the second
        (username/start) page. Clicking it opens the full-screen player
        profile page. ── */
@@ -3471,6 +3485,8 @@
 </head>
 <body>
 
+    <div id="online-indicator">ONLINE: 0</div>
+
     <div id="start-screen" onclick="handleAdminTap()">
         <h1 class="start-title" id="admin-tap-trigger">DAMA KINGS</h1>
         <div class="start-container no-box">
@@ -3965,6 +3981,7 @@
     const rematchUsernameEl = document.getElementById('rematch-username');
     const roomIdCornerEl = document.getElementById('room-id-corner');
     const roomIdCornerValueEl = document.getElementById('room-id-corner-value');
+    const onlineIndicatorEl = document.getElementById('online-indicator');
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -4048,6 +4065,12 @@
         window.firebaseOnValue(presenceRef, (snapshot) => {
             const data = snapshot.exists() ? snapshot.val() : {};
             onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame) }));
+            // ── Real-time online indicator: this presence listener fires
+            // continuously (via Firebase's live onValue subscription) any
+            // time a player connects or disconnects, so the count shown in
+            // the top-right indicator always reflects who is online right
+            // now, with no manual refresh or polling needed. ──
+            if (onlineIndicatorEl) onlineIndicatorEl.textContent = 'ONLINE: ' + onlinePresenceList.length;
             // ── Keep the Players tab's online-status filtering in sync in real
             // time: this presence listener fires continuously (via Firebase's
             // live onValue subscription) any time a player connects or
