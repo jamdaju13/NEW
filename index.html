@@ -707,21 +707,6 @@
         margin-left: 6px;
     }
 
-    #online-indicator {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        z-index: 2001;
-        background: rgba(26, 26, 26, 0.85);
-        border: 1px solid #333;
-        border-radius: 10px;
-        padding: 8px 14px;
-        font-size: 13px;
-        font-weight: 600;
-        color: #ffffff;
-        cursor: pointer;
-    }
-
     /* ── PLAYER PROFILE BUBBLE: shown above the left side of the second
        (username/start) page. Clicking it opens the full-screen player
        profile page. ── */
@@ -2472,91 +2457,6 @@
         border-radius: 10px;
     }
 
-    #online-players-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.95);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        z-index: 2600;
-        padding: 20px;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    #online-players-modal.show {
-        display: flex;
-        animation: fadeIn 0.3s ease forwards;
-    }
-
-    .online-player-item {
-        background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
-        border: 1px solid #2a2a2a;
-        border-radius: 12px;
-        padding: 14px 18px;
-        color: #ffffff;
-        font-size: 15px;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .online-player-item:active {
-        transform: scale(0.98);
-    }
-
-    .online-players-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        padding: 20px 24px 4px;
-    }
-
-    .online-player-index {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, #795548 0%, #4E342E 100%);
-        color: #ffffff;
-        font-size: 12px;
-        font-weight: 700;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-shrink: 0;
-    }
-
-    .online-player-name {
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
-    .online-player-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #4CAF50;
-        box-shadow: 0 0 8px rgba(76, 175, 80, 0.7);
-        flex-shrink: 0;
-    }
-
-    .online-player-playing {
-        font-size: 10px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        color: #FFD700;
-        flex-shrink: 0;
-    }
-
     #challenge-overlay {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -3572,7 +3472,6 @@
 <body>
 
     <div id="start-screen" onclick="handleAdminTap()">
-        <div id="online-indicator" onclick="openOnlinePlayersModal()">ONLINE: 0</div>
         <h1 class="start-title" id="admin-tap-trigger">DAMA KINGS</h1>
         <div class="start-container no-box">
             <button class="continue-btn start-play-circle" onclick="startGame()">▷</button>
@@ -3780,18 +3679,6 @@
             </div>
             <div class="leaderboard-modal-body" id="public-leaderboard-body">
                 <div class="no-leaderboard">No leaderboard entries available</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="online-players-modal">
-        <div class="leaderboard-modal-content">
-            <div class="leaderboard-modal-header">
-                <div class="leaderboard-modal-title">Online Players</div>
-                <button class="close-modal-btn" onclick="closeOnlinePlayersModal()">✖</button>
-            </div>
-            <div class="leaderboard-modal-body" id="online-players-body">
-                <div class="no-leaderboard">No players online</div>
             </div>
         </div>
     </div>
@@ -4078,7 +3965,6 @@
     const rematchUsernameEl = document.getElementById('rematch-username');
     const roomIdCornerEl = document.getElementById('room-id-corner');
     const roomIdCornerValueEl = document.getElementById('room-id-corner-value');
-    const onlineIndicatorEl = document.getElementById('online-indicator');
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
@@ -4161,10 +4047,7 @@
 
         window.firebaseOnValue(presenceRef, (snapshot) => {
             const data = snapshot.exists() ? snapshot.val() : {};
-            const count = Object.keys(data).length;
-            if (onlineIndicatorEl) onlineIndicatorEl.textContent = 'ONLINE: ' + count;
             onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame) }));
-            renderOnlinePlayersList();
             // ── Keep the Players tab's online-status filtering in sync in real
             // time: this presence listener fires continuously (via Firebase's
             // live onValue subscription) any time a player connects or
@@ -4214,7 +4097,6 @@
 
     async function challengePlayer(targetKey) {
         if (!myPresenceRef || targetKey === myPresenceRef.key) return;
-        closeOnlinePlayersModal();
         outgoingChallengeTargetKey = targetKey;
         await hostGame();
         document.getElementById('host-join-screen').classList.remove('show');
@@ -4293,31 +4175,6 @@
     function setPresenceUsername(username) {
         if (!myPresenceRef) return;
         window.firebaseUpdate(myPresenceRef, { username: username || 'Guest' });
-    }
-
-    function renderOnlinePlayersList() {
-        const modalEl = document.getElementById('online-players-modal');
-        if (!modalEl || !modalEl.classList.contains('show')) return;
-        const bodyEl = document.getElementById('online-players-body');
-        if (onlinePresenceList.length === 0) {
-            bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
-        } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
-        }
-    }
-
-    function openOnlinePlayersModal() {
-        const bodyEl = document.getElementById('online-players-body');
-        if (onlinePresenceList.length === 0) {
-            bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
-        } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
-        }
-        document.getElementById('online-players-modal').classList.add('show');
-    }
-
-    function closeOnlinePlayersModal() {
-        document.getElementById('online-players-modal').classList.remove('show');
     }
 
     function updateSpectatorTurnIndicator() {
@@ -7041,8 +6898,6 @@
     window.spectateGame = spectateGame;
     window.openLeaderboard = openLeaderboard;
     window.closeLeaderboardModal = closeLeaderboardModal;
-    window.openOnlinePlayersModal = openOnlinePlayersModal;
-    window.closeOnlinePlayersModal = closeOnlinePlayersModal;
     window.challengePlayer = challengePlayer;
     window.cancelChallengeRequest = cancelChallengeRequest;
     window.acceptChallenge = acceptChallenge;
