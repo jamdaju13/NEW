@@ -4219,7 +4219,7 @@
         if (!myPresenceRef || targetKey === myPresenceRef.key) return;
         closeOnlinePlayersModal();
         outgoingChallengeTargetKey = targetKey;
-        await hostGame();
+        await hostGame(true);
         document.getElementById('host-join-screen').classList.remove('show');
         document.getElementById('host-lobby-screen').classList.remove('show');
         document.getElementById('challenge-waiting-overlay').classList.add('show');
@@ -5675,11 +5675,11 @@
         return Math.random() < 0.5 ? 1 : 2;
     }
 
-    async function hostGame() {
+    async function hostGame(skipLobbyDisplay) {
         // ── OPTIMIZATION: ensure IP is resolved before hosting ──
         await ipPromise;
         document.getElementById('host-join-screen').classList.remove('show');
-        document.getElementById('host-lobby-screen').classList.add('show');
+        if (!skipLobbyDisplay) document.getElementById('host-lobby-screen').classList.add('show');
         isHost = true;
         myPlayerNumber = 1;
 
