@@ -4165,8 +4165,10 @@
             // continuously (via Firebase's live onValue subscription) any
             // time a player connects or disconnects, so the count shown in
             // the top-right indicator always reflects who is online right
-            // now, with no manual refresh or polling needed. ──
-            if (onlineIndicatorEl) onlineIndicatorEl.textContent = 'ONLINE: ' + onlinePresenceList.length;
+            // now, with no manual refresh or polling needed. The current/own
+            // player is excluded from this count. ──
+            const otherPlayersOnline = onlinePresenceList.filter(p => !myPresenceRef || p.key !== myPresenceRef.key);
+            if (onlineIndicatorEl) onlineIndicatorEl.textContent = 'ONLINE: ' + otherPlayersOnline.length;
             renderOnlinePlayersList();
             // ── Keep the Players tab's online-status filtering in sync in real
             // time: this presence listener fires continuously (via Firebase's
@@ -4302,19 +4304,21 @@
         const modalEl = document.getElementById('online-players-modal');
         if (!modalEl || !modalEl.classList.contains('show')) return;
         const bodyEl = document.getElementById('online-players-body');
-        if (onlinePresenceList.length === 0) {
+        const otherPlayersOnline = onlinePresenceList.filter(p => !myPresenceRef || p.key !== myPresenceRef.key);
+        if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
         }
     }
 
     function openOnlinePlayersModal() {
         const bodyEl = document.getElementById('online-players-body');
-        if (onlinePresenceList.length === 0) {
+        const otherPlayersOnline = onlinePresenceList.filter(p => !myPresenceRef || p.key !== myPresenceRef.key);
+        if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + onlinePresenceList.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
         }
         document.getElementById('online-players-modal').classList.add('show');
     }
