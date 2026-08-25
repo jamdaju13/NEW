@@ -4194,6 +4194,16 @@
     // false, i.e. while the player is on the first page/lobby. ──
     let isPlayerCurrentlyInGame = false;
 
+    // ── A player can only receive incoming challenges while they are on the
+    // first page/lobby (the #start-screen element, visible whenever it does
+    // not carry the 'hidden' class). Any other screen — profile, host/join
+    // selection, host/join lobby, an active game, spectating, etc. — counts
+    // as "not the first page" for challenge-reception purposes. ──
+    function isOnFirstPage() {
+        const startScreenEl = document.getElementById('start-screen');
+        return !!startScreenEl && !startScreenEl.classList.contains('hidden');
+    }
+
     function listenForChallenges() {
         if (!myPresenceRef) return;
         const challengeRef = window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key);
@@ -4201,10 +4211,11 @@
             if (!snapshot.exists()) return;
             const data = snapshot.val();
             // ── Block incoming challenges entirely while the player is in an
-            // active game: the challenge entry is left untouched in Firebase
-            // (so it isn't lost) but no overlay is shown and it is not
-            // accepted while this client is in-game. ──
-            if (isPlayerCurrentlyInGame) return;
+            // active game, or on any page other than the first page/lobby:
+            // the challenge entry is left untouched in Firebase (so it isn't
+            // lost) but no overlay is shown and it is not accepted while
+            // this client is in-game or off the first page. ──
+            if (isPlayerCurrentlyInGame || !isOnFirstPage()) return;
             incomingChallenge = { roomId: data.roomId, fromKey: data.fromKey };
             document.getElementById('challenge-from-name').textContent = (data.fromUsername || 'Someone') + ' challenges you!';
             document.getElementById('challenge-overlay').style.display = 'flex';
@@ -4254,7 +4265,7 @@
     }
 
     async function acceptChallenge() {
-        if (!incomingChallenge || isPlayerCurrentlyInGame) return;
+        if (!incomingChallenge || isPlayerCurrentlyInGame || !isOnFirstPage()) return;
         const roomId = incomingChallenge.roomId;
         document.getElementById('challenge-overlay').style.display = 'none';
         await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key));
@@ -4399,6 +4410,7 @@
     function closeProfile() {
         document.getElementById('profile-screen').classList.remove('show');
         document.getElementById('start-screen').classList.remove('hidden');
+        checkPendingChallengeOnReturn();
     }
 
     async function saveProfileUsername() {
@@ -5549,6 +5561,7 @@
     function backToStart() {
         document.getElementById('host-join-screen').classList.remove('show');
         document.getElementById('start-screen').classList.remove('hidden');
+        checkPendingChallengeOnReturn();
     }
 
     // ── PLAY VS EXPERT AI ──
