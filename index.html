@@ -2556,6 +2556,14 @@
         flex-shrink: 0;
     }
 
+    .online-player-unavailable {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        color: #9E9E9E;
+        flex-shrink: 0;
+    }
+
     #challenge-overlay {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -4155,12 +4163,12 @@
     function initOnlinePresence() {
         const presenceRef = window.firebaseRef(window.firebaseDB, 'presence');
         myPresenceRef = window.firebasePush(presenceRef);
-        window.firebaseSet(myPresenceRef, { username: player1Username || 'Guest', inGame: false });
+        window.firebaseSet(myPresenceRef, { username: player1Username || 'Guest', inGame: false, onFirstPage: true });
         window.firebaseOnDisconnect(myPresenceRef).remove();
 
         window.firebaseOnValue(presenceRef, (snapshot) => {
             const data = snapshot.exists() ? snapshot.val() : {};
-            onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame) }));
+            onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame), onFirstPage: (p && p.onFirstPage !== undefined) ? !!p.onFirstPage : true }));
             // ── Real-time online indicator: this presence listener fires
             // continuously (via Firebase's live onValue subscription) any
             // time a player connects or disconnects, so the count shown in
@@ -4202,6 +4210,15 @@
     function isOnFirstPage() {
         const startScreenEl = document.getElementById('start-screen');
         return !!startScreenEl && !startScreenEl.classList.contains('hidden');
+    }
+
+    // ── Broadcasts this player's current first-page status to their presence
+    // record so other online players see an accurate "Unavailable" status in
+    // the Online Players list whenever this player navigates away from (or
+    // back to) the first page/lobby. ──
+    function broadcastOnFirstPage() {
+        if (!myPresenceRef) return;
+        window.firebaseUpdate(myPresenceRef, { onFirstPage: isOnFirstPage() });
     }
 
     function listenForChallenges() {
@@ -4271,6 +4288,7 @@
         await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key));
         incomingChallenge = null;
         document.getElementById('start-screen').classList.add('hidden');
+        broadcastOnFirstPage();
         document.getElementById('room-id-input').value = roomId;
         isHost = false;
         myPlayerNumber = 2;
@@ -4355,7 +4373,7 @@
         if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame && p.onFirstPage ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : (!p.onFirstPage ? '<div class="online-player-unavailable">Unavailable</div>' : '<div class="online-player-dot"></div>')) + '</div>').join('') + '</div>';
         }
     }
 
@@ -4365,7 +4383,7 @@
         if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : '<div class="online-player-dot"></div>') + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame && p.onFirstPage ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : (!p.onFirstPage ? '<div class="online-player-unavailable">Unavailable</div>' : '<div class="online-player-dot"></div>')) + '</div>').join('') + '</div>';
         }
         document.getElementById('online-players-modal').classList.add('show');
     }
@@ -4404,12 +4422,14 @@
         document.getElementById('profile-username').value = player1Username || '';
         document.getElementById('profile-avatar').textContent = (player1Username || '?').trim().slice(0, 2);
         document.getElementById('start-screen').classList.add('hidden');
+        broadcastOnFirstPage();
         document.getElementById('profile-screen').classList.add('show');
     }
 
     function closeProfile() {
         document.getElementById('profile-screen').classList.remove('show');
         document.getElementById('start-screen').classList.remove('hidden');
+        broadcastOnFirstPage();
         checkPendingChallengeOnReturn();
     }
 
@@ -5456,6 +5476,7 @@
             if (!spectatorConnected) {
                 spectatorConnected = true;
                 document.getElementById('start-screen').classList.add('hidden');
+                broadcastOnFirstPage();
                 document.getElementById('spectate-modal').classList.remove('show');
                 document.getElementById('spectate-loading-screen').classList.remove('show');
                 document.getElementById('host-join-screen').classList.remove('show');
@@ -5555,12 +5576,14 @@
         }
         document.getElementById('display-username').textContent = player1Username;
         document.getElementById('start-screen').classList.add('hidden');
+        broadcastOnFirstPage();
         document.getElementById('host-join-screen').classList.add('show');
     }
 
     function backToStart() {
         document.getElementById('host-join-screen').classList.remove('show');
         document.getElementById('start-screen').classList.remove('hidden');
+        broadcastOnFirstPage();
         checkPendingChallengeOnReturn();
     }
 
@@ -6027,6 +6050,7 @@
         gameStartTime = Date.now();
         setPresenceInGame(true);
         document.getElementById('start-screen').classList.add('hidden');
+        broadcastOnFirstPage();
         document.getElementById('challenge-waiting-overlay').classList.remove('show');
         outgoingChallengeTargetKey = null;
         document.getElementById('host-lobby-screen').classList.remove('show');
@@ -7040,6 +7064,7 @@
 
         // Hide all screens, show game
         document.getElementById('start-screen').classList.add('hidden');
+        broadcastOnFirstPage();
         document.getElementById('host-join-screen').classList.remove('show');
         document.getElementById('host-lobby-screen').classList.remove('show');
         document.getElementById('join-lobby-screen').classList.remove('show');
