@@ -4225,7 +4225,15 @@
         if (!myPresenceRef) return;
         const challengeRef = window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key);
         window.firebaseOnValue(challengeRef, (snapshot) => {
-            if (!snapshot.exists()) return;
+            if (!snapshot.exists()) {
+                // ── The challenge entry was removed (e.g. the sender cancelled
+                // it) — immediately clear it for the receiver too, so it can
+                // no longer be accepted or interacted with, and the overlay
+                // (if shown) is dismissed right away. ──
+                incomingChallenge = null;
+                document.getElementById('challenge-overlay').style.display = 'none';
+                return;
+            }
             const data = snapshot.val();
             // ── Block incoming challenges entirely while the player is in an
             // active game, or on any page other than the first page/lobby:
