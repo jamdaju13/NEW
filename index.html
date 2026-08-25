@@ -4165,6 +4165,12 @@
             if (onlineIndicatorEl) onlineIndicatorEl.textContent = 'ONLINE: ' + count;
             onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame) }));
             renderOnlinePlayersList();
+            // ── Keep the Players tab's online-status filtering in sync in real
+            // time: this presence listener fires continuously (via Firebase's
+            // live onValue subscription) any time a player connects or
+            // disconnects, so refresh the Players list immediately whenever
+            // that happens instead of waiting for a manual refresh. ──
+            refreshPlayersList();
         });
 
         listenForChallenges();
@@ -4714,6 +4720,15 @@
         const searchVal = (document.getElementById('search-player').value || '').toLowerCase();
         let players = Object.values(playersMap)
             .filter(p => !searchVal || p.name.toLowerCase().includes(searchVal));
+
+        // ── ONLINE-ONLY FILTER: the Players tab list should only ever show
+        // players who are currently online. onlinePresenceList is kept live
+        // by the real-time Firebase 'presence' listener in initOnlinePresence
+        // (see above), so cross-referencing against it here means this list
+        // always reflects who is online right now — any player who is not
+        // currently connected is excluded/hidden from this list entirely. ──
+        const onlineUsernames = new Set(onlinePresenceList.map(p => p.username));
+        players = players.filter(p => onlineUsernames.has(p.name));
 
         // Apply the active Show Only Winners / Show Only Losers filter before
         // sorting, so the filtered results remain sorted according to the
