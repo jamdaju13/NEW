@@ -4188,6 +4188,11 @@
     // notified live and, if accepted, joins that room to play together. ──
     let incomingChallenge = null;
     let outgoingChallengeTargetKey = null;
+    // ── Tracks whether this client is currently in an active game (kept in
+    // sync with the same inGame flag written to this player's presence
+    // record). Challenges must only be receivable/acceptable while this is
+    // false, i.e. while the player is on the first page/lobby. ──
+    let isPlayerCurrentlyInGame = false;
 
     function listenForChallenges() {
         if (!myPresenceRef) return;
@@ -4195,6 +4200,11 @@
         window.firebaseOnValue(challengeRef, (snapshot) => {
             if (!snapshot.exists()) return;
             const data = snapshot.val();
+            // ── Block incoming challenges entirely while the player is in an
+            // active game: the challenge entry is left untouched in Firebase
+            // (so it isn't lost) but no overlay is shown and it is not
+            // accepted while this client is in-game. ──
+            if (isPlayerCurrentlyInGame) return;
             incomingChallenge = { roomId: data.roomId, fromKey: data.fromKey };
             document.getElementById('challenge-from-name').textContent = (data.fromUsername || 'Someone') + ' challenges you!';
             document.getElementById('challenge-overlay').style.display = 'flex';
@@ -4244,7 +4254,7 @@
     }
 
     async function acceptChallenge() {
-        if (!incomingChallenge) return;
+        if (!incomingChallenge || isPlayerCurrentlyInGame) return;
         const roomId = incomingChallenge.roomId;
         document.getElementById('challenge-overlay').style.display = 'none';
         await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key));
@@ -4291,8 +4301,34 @@
     }
 
     function setPresenceInGame(inGame) {
+        // ── Keep the local in-game flag in sync regardless of whether a
+        // presence ref exists yet, so challenge gating is accurate even if
+        // this fires before presence has been initialized. ──
+        const wasInGame = isPlayerCurrentlyInGame;
+        isPlayerCurrentlyInGame = !!inGame;
+        // ── On returning to the lobby (in-game -> not in-game), surface any
+        // challenge that arrived while incoming challenges were blocked, so
+        // challenges become available again as soon as the player is back
+        // on the first page/lobby. ──
+        if (wasInGame && !isPlayerCurrentlyInGame) {
+            checkPendingChallengeOnReturn();
+        }
         if (!myPresenceRef) return;
         window.firebaseUpdate(myPresenceRef, { inGame: inGame });
+    }
+
+    // ── One-time read of this player's challenge node, used only when
+    // returning to the lobby to catch a challenge that was received (and
+    // deliberately withheld) while the player was in an active game. ──
+    async function checkPendingChallengeOnReturn() {
+        if (!myPresenceRef) return;
+        const challengeRef = window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key);
+        const snapshot = await window.firebaseGet(challengeRef);
+        if (!snapshot.exists()) return;
+        const data = snapshot.val();
+        incomingChallenge = { roomId: data.roomId, fromKey: data.fromKey };
+        document.getElementById('challenge-from-name').textContent = (data.fromUsername || 'Someone') + ' challenges you!';
+        document.getElementById('challenge-overlay').style.display = 'flex';
     }
 
     function setPresenceUsername(username) {
