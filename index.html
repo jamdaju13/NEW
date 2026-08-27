@@ -4320,10 +4320,19 @@
     async function declineChallenge() {
         if (!incomingChallenge) return;
         document.getElementById('challenge-overlay').style.display = 'none';
+        // ── Capture these before removing the challenge entry: that removal
+        // triggers this client's own listenForChallenges() listener (it
+        // watches this same 'challenges/<myKey>' path), which immediately
+        // sets incomingChallenge = null. If we read incomingChallenge AFTER
+        // the await below instead, it may already be null by then, throwing
+        // and silently skipping the challengeDeclined write below — which is
+        // what notifies Player A to close their waiting layer. ──
+        const declinedFromKey = incomingChallenge.fromKey;
+        const declinedRoomId = incomingChallenge.roomId;
         await window.firebaseRemove(window.firebaseRef(window.firebaseDB, 'challenges/' + myPresenceRef.key));
-        if (incomingChallenge.fromKey) {
-            await window.firebaseSet(window.firebaseRef(window.firebaseDB, 'challengeDeclined/' + incomingChallenge.fromKey), {
-                roomId: incomingChallenge.roomId,
+        if (declinedFromKey) {
+            await window.firebaseSet(window.firebaseRef(window.firebaseDB, 'challengeDeclined/' + declinedFromKey), {
+                roomId: declinedRoomId,
                 timestamp: Date.now()
             });
         }
