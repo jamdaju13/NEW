@@ -5,6 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Daju13</title>
 <link rel="icon" type="image/png" sizes="180x180" href="images/daju.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
     :root {
         --bg-color: #000000;
@@ -13,13 +16,28 @@
         --pc-black: #1A1A1A;
         --pc-white: #9E9E9E;
         --text-color: #FFFFFF;
+        /* ── Added design-system tokens: shared accent, surface, shadow,
+           radius and easing values used to keep buttons, panels, and
+           transitions feeling consistent across the app. These are purely
+           additive — the four original variables above are untouched and
+           still used exactly as before. ── */
+        --accent: #795548;
+        --accent-dark: #4E342E;
+        --accent-light: #A1887F;
+        --surface: rgba(24, 22, 20, 0.92);
+        --surface-border: rgba(255, 255, 255, 0.08);
+        --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.45);
+        --shadow-strong: 0 20px 60px rgba(0, 0, 0, 0.55);
+        --radius-md: 12px;
+        --radius-lg: 20px;
+        --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body {
         margin: 0;
-        background-color: var(--bg-color);
+        background: radial-gradient(ellipse at 50% 35%, #171512 0%, var(--bg-color) 72%);
         color: var(--text-color);
         font-family: "Times New Roman", Times, serif;
         display: flex;
@@ -30,6 +48,24 @@
         overflow: hidden;
         user-select: none;
         -webkit-user-select: none;
+    }
+
+    /* ── Polished, unobtrusive scrollbar for any scrollable panel (chat,
+       player lists, history, etc.) — purely cosmetic, no structural or
+       functional change to the elements it applies to. ── */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.28);
     }
 
     #start-screen {
@@ -113,7 +149,7 @@
         font-size: 16px;
         font-family: inherit;
         outline: none;
-        transition: all 0.3s ease;
+        transition: all 0.3s var(--ease-smooth);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         margin-bottom: 32px;
         text-align: center;
@@ -142,7 +178,7 @@
         text-transform: uppercase;
         letter-spacing: 2px;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.3s var(--ease-smooth);
         box-shadow: 0 8px 20px rgba(121, 85, 72, 0.3);
         position: relative;
         overflow: hidden;
@@ -180,6 +216,15 @@
         margin: 0 auto;
     }
 
+    #admin-tap-trigger {
+        background: none;
+        -webkit-background-clip: initial;
+        background-clip: initial;
+        color: #000000;
+        -webkit-text-fill-color: #000000;
+        -webkit-text-stroke: 1px #ffffff;
+    }
+
     #start-screen .continue-btn.start-play-circle {
         width: 64px;
         height: 64px;
@@ -211,7 +256,7 @@
         -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
         -webkit-mask-composite: xor;
         mask-composite: exclude;
-        animation: startPlayCircleSpin 2.2s linear infinite;
+        animation: startPlayCircleSpin 1.1s linear infinite;
         pointer-events: none;
     }
 
@@ -477,23 +522,25 @@
         flex-direction: column;
         gap: 20px;
         width: 100%;
+        max-width: 240px;
+        margin: 0 auto;
     }
 
     .host-join-btn {
         width: 100%;
-        padding: 18px 32px;
+        padding: 12px 24px;
         background: linear-gradient(135deg, #795548 0%, #4E342E 100%);
         color: #ffffff;
         border: none;
         border-radius: 12px;
-        font-size: 15px;
+        font-size: 12px;
         font-family: inherit;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 2px;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 8px 20px rgba(121, 85, 72, 0.3);
+        box-shadow: none;
         position: relative;
         overflow: hidden;
     }
@@ -511,7 +558,7 @@
 
     .host-join-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 28px rgba(121, 85, 72, 0.4);
+        box-shadow: none;
     }
 
     .host-join-btn:hover::before {
@@ -591,36 +638,56 @@
     .back-btn {
         background: transparent;
         color: #FFFFFF;
-        border: 1px solid #FFFFFF;
-        padding: 12px 32px;
+        border: none;
+        padding: 0;
         font-size: 14px;
         font-family: inherit;
         text-transform: uppercase;
         letter-spacing: 2px;
         cursor: pointer;
         transition: all 0.2s ease;
-        border-radius: 8px;
         margin-top: 20px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .back-btn:hover {
-        background: #FFFFFF;
-        color: #000000;
+        color: #cccccc;
     }
 
     #admin-password-screen .back-btn {
         margin-left: auto;
+        margin-right: auto;
         display: block;
     }
 
     #host-join-screen .back-btn {
         margin-left: auto;
+        margin-right: auto;
         display: block;
     }
 
     #join-lobby-screen .back-btn {
         margin-left: auto;
+        margin-right: auto;
         display: block;
+    }
+
+    #join-lobby-screen .continue-btn {
+        width: auto;
+        padding: 12px 24px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    #room-id-input {
+        width: auto;
+        max-width: 140px;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .room-input {
@@ -702,6 +769,33 @@
     }
 
     #room-id-corner .room-id-corner-value {
+        color: #A0522D;
+        font-weight: 700;
+        margin-left: 6px;
+    }
+
+    #round-score-corner {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 50;
+        background: rgba(26, 26, 26, 0.85);
+        border: 1px solid #333;
+        border-radius: 10px;
+        padding: 8px 14px;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #ffffff;
+        display: none;
+    }
+
+    #round-score-corner.show {
+        display: block;
+    }
+
+    #round-score-corner .round-score-corner-value {
         color: #A0522D;
         font-weight: 700;
         margin-left: 6px;
@@ -806,9 +900,9 @@
         background: rgba(26, 26, 26, 0.9);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 20px;
-        padding: 20px 28px;
+        padding: 16px 20px;
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.1);
-        max-width: 480px;
+        max-width: 240px;
         width: 100%;
         backdrop-filter: blur(10px);
         display: flex;
@@ -824,13 +918,13 @@
     }
 
     .profile-avatar {
-        width: 52px;
-        height: 52px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 14px;
         font-weight: 700;
         color: #0a0a0a;
         text-transform: uppercase;
@@ -841,8 +935,8 @@
     }
 
     .profile-title {
-        font-size: 20px;
-        letter-spacing: 4px;
+        font-size: 16px;
+        letter-spacing: 3px;
         margin-bottom: 0;
     }
 
@@ -874,6 +968,7 @@
         display: flex;
         flex-direction: column;
         gap: 8px;
+        border-top: none;
     }
 
     .profile-actions .continue-btn,
@@ -882,29 +977,41 @@
     }
 
     .profile-card .username-input {
-        padding: 10px 16px;
-        margin-bottom: 12px;
-        font-size: 14px;
+        display: block;
+        width: calc(10ch + 32px);
+        min-width: calc(10ch + 32px);
+        max-width: calc(10ch + 32px);
+        padding: 8px 14px;
+        margin: 0 auto 12px;
+        font-size: 13px;
     }
 
     .profile-card .continue-btn {
-        padding: 10px 24px;
-        font-size: 13px;
+        display: block;
+        width: fit-content;
+        padding: 8px 18px;
+        font-size: 12px;
+        box-shadow: none;
+        margin: 0 auto;
+    }
+
+    .profile-card .continue-btn:hover {
+        box-shadow: none;
     }
 
     @media (max-width: 480px) {
         .profile-card {
-            padding: 16px 20px;
+            padding: 14px 18px;
         }
 
         .profile-avatar {
-            width: 44px;
-            height: 44px;
-            font-size: 16px;
+            width: 36px;
+            height: 36px;
+            font-size: 13px;
         }
 
         .profile-title {
-            font-size: 16px;
+            font-size: 14px;
             letter-spacing: 2px;
         }
     }
@@ -915,7 +1022,7 @@
         color: #ffffff;
         text-align: center;
         margin-bottom: 8px;
-        font-family: "Times New Roman", Times, serif;
+        font-family: inherit;
     }
 
     .spectator-player-name {
@@ -1631,12 +1738,12 @@
         letter-spacing: 2px;
         cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 8px 20px rgba(121, 85, 72, 0.3);
+        box-shadow: none;
     }
 
     .winner-btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 12px 28px rgba(121, 85, 72, 0.4);
+        box-shadow: none;
     }
 
     .winner-btn:active {
@@ -1676,6 +1783,118 @@
         100% {
             transform: translateY(100vh) rotate(360deg) translateZ(0);
             opacity: 0;
+        }
+    }
+
+    /* ── Synchronized win/score black-screen transition: fully additive,
+       does not alter any existing game, scoring, UI, control, or networking
+       logic. Sits above absolutely everything (including the winner screen,
+       chat, and modals) so that whatever is happening underneath is hidden
+       for the full 3.5s duration, then removed to reveal normal play. ── */
+    #win-transition-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #000000;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        overflow: hidden;
+        padding: 20px;
+    }
+
+    #win-transition-overlay.show {
+        display: flex;
+    }
+
+    .wt-text-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .wt-username {
+        font-size: clamp(24px, 8vw, 56px);
+        font-weight: 700;
+        letter-spacing: clamp(2px, 0.5vw, 6px);
+        color: #FFD700;
+        text-transform: uppercase;
+        white-space: nowrap;
+        max-width: 90vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
+        margin: 0 0 12px 0;
+        opacity: 0;
+    }
+
+    .wt-winner-label {
+        font-size: clamp(20px, 6vw, 40px);
+        font-weight: 900;
+        letter-spacing: 10px;
+        color: #FFFFFF;
+        text-transform: uppercase;
+        margin: 0;
+        opacity: 0;
+    }
+
+    /* Username slides in from the left, holds, then fades out */
+    #win-transition-overlay.show .wt-username {
+        animation: wtSlideLeft 3.4s var(--ease-smooth, ease) forwards;
+    }
+
+    /* "WINNER" label slides in from the right, holds, then fades out */
+    #win-transition-overlay.show .wt-winner-label {
+        animation: wtSlideRight 3.4s var(--ease-smooth, ease) forwards;
+    }
+
+    @keyframes wtSlideLeft {
+        0% {
+            transform: translateX(120px);
+            opacity: 0;
+        }
+        18% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        82% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateX(-60px);
+            opacity: 0;
+        }
+    }
+
+    @keyframes wtSlideRight {
+        0% {
+            transform: translateX(-120px);
+            opacity: 0;
+        }
+        18% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        82% {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        100% {
+            transform: translateX(60px);
+            opacity: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .wt-winner-label {
+            letter-spacing: 6px;
         }
     }
 
@@ -1963,8 +2182,7 @@
         display: none;
         flex-direction: column;
         z-index: 3000;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
+        overflow: hidden;
     }
 
     #admin-dashboard.show {
@@ -1984,6 +2202,14 @@
         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
+    .dashboard-header .back-btn {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        margin: 0;
+    }
+
     .dashboard-title {
         font-size: 18px;
         font-weight: 700;
@@ -1994,8 +2220,9 @@
 
     .dashboard-tabs {
         display: flex;
-        gap: 10px;
-        padding: 16px;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 12px 16px;
         background: #0d0d0d;
         border-bottom: 1px solid #222;
         position: sticky;
@@ -2005,16 +2232,17 @@
 
     .tab-btn {
         flex: 1;
-        padding: 12px 18px;
+        min-width: 0;
+        padding: 9px 12px;
         background: #1a1a1a;
         color: #999;
         border: 1px solid #333;
         border-radius: 8px;
-        font-size: 12px;
+        font-size: 11px;
         font-family: inherit;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         cursor: pointer;
         transition: all 0.3s ease;
     }
@@ -2023,6 +2251,13 @@
         background: #795548;
         color: #ffffff;
         border-color: #795548;
+    }
+
+    .dashboard-content-wrap {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
     }
 
     .tab-content {
@@ -2036,27 +2271,29 @@
     .dashboard-controls {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        padding: 16px;
+        gap: 8px;
+        padding: 12px 16px;
         background: #0d0d0d;
         border-bottom: 1px solid #222;
     }
 
     .control-row {
         display: flex;
-        gap: 10px;
+        align-items: center;
+        gap: 8px;
         flex-wrap: wrap;
     }
 
     .control-input {
-        flex: 1;
-        min-width: 150px;
-        padding: 12px 14px;
+        flex: 1 1 140px;
+        min-width: 0;
+        max-width: 220px;
+        padding: 8px 12px;
         background: #1a1a1a;
         border: 1px solid #333;
         border-radius: 8px;
         color: #ffffff;
-        font-size: 13px;
+        font-size: 12px;
         font-family: inherit;
         outline: none;
         transition: all 0.3s ease;
@@ -2068,16 +2305,17 @@
     }
 
     .control-btn {
-        padding: 12px 18px;
+        flex: 0 0 auto;
+        padding: 8px 14px;
         background: #795548;
         color: #ffffff;
         border: none;
         border-radius: 8px;
-        font-size: 12px;
+        font-size: 11px;
         font-family: inherit;
         font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         cursor: pointer;
         transition: all 0.3s ease;
         white-space: nowrap;
@@ -2212,6 +2450,34 @@
 
     .player-section.winner {
         border-color: #A0522D;
+        position: relative;
+    }
+
+    .winner-add-btn {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #232323 0%, #0a0a0a 100%);
+        border: 1px solid rgba(160, 82, 45, 0.5);
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+        line-height: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 0 10px rgba(160, 82, 45, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .winner-add-btn:hover {
+        box-shadow: 0 0 16px rgba(160, 82, 45, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        border-color: rgba(160, 82, 45, 0.8);
     }
 
     .player-section.loser {
@@ -2343,6 +2609,22 @@
         display: flex;
     }
 
+    #clear-leaderboards-confirm-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 4000;
+        padding: 20px;
+    }
+
+    #clear-leaderboards-confirm-overlay.show {
+        display: flex;
+    }
+
     .delete-confirm-message {
         font-size: 16px;
         color: #ffffff;
@@ -2364,7 +2646,7 @@
         align-items: center;
         justify-content: center;
         z-index: 2600;
-        padding: 20px;
+        padding: 0;
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -2372,6 +2654,19 @@
     #leaderboard-modal.show {
         display: flex;
         animation: fadeIn 0.3s ease forwards;
+    }
+
+    #leaderboard-modal .leaderboard-modal-content {
+        max-width: 75%;
+        width: 75%;
+        max-height: 75%;
+        height: 75%;
+        border-radius: 0;
+    }
+
+    #leaderboard-modal .leaderboard-modal-title {
+        font-size: 13px;
+        letter-spacing: 1px;
     }
 
     @keyframes fadeIn {
@@ -2482,7 +2777,7 @@
         align-items: center;
         justify-content: center;
         z-index: 2600;
-        padding: 20px;
+        padding: 0;
         opacity: 0;
         transition: opacity 0.3s ease;
     }
@@ -2490,6 +2785,19 @@
     #online-players-modal.show {
         display: flex;
         animation: fadeIn 0.3s ease forwards;
+    }
+
+    #online-players-modal .leaderboard-modal-content {
+        max-width: 75%;
+        width: 75%;
+        max-height: 75%;
+        height: 75%;
+        border-radius: 0;
+    }
+
+    #online-players-modal .leaderboard-modal-title {
+        font-size: 13px;
+        letter-spacing: 1px;
     }
 
     .online-player-item {
@@ -2554,6 +2862,19 @@
         letter-spacing: 1px;
         color: #FFD700;
         flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+
+    .online-player-spectate-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        cursor: pointer;
+        line-height: 1;
     }
 
     .online-player-unavailable {
@@ -2867,8 +3188,8 @@
     .leaderboard-controls {
         display: flex;
         flex-direction: column;
-        gap: 12px;
-        padding: 16px;
+        gap: 8px;
+        padding: 12px 16px;
         background: #0d0d0d;
         border-bottom: 1px solid #222;
     }
@@ -2876,9 +3197,9 @@
     .leaderboard-form {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 10px;
         background: #1a1a1a;
-        padding: 16px;
+        padding: 14px;
         border-radius: 8px;
         border: 1px solid #333;
     }
@@ -3070,20 +3391,33 @@
         }
 
         .control-row {
-            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         .control-input {
-            width: 100%;
+            flex: 1 1 100%;
+            max-width: 100%;
         }
 
         .control-btn {
-            width: 100%;
+            flex: 1 1 auto;
+        }
+
+        .dashboard-tabs {
+            gap: 6px;
+            padding: 10px;
         }
 
         .tab-btn {
-            font-size: 10px;
-            padding: 10px 12px;
+            flex: 1;
+            min-width: 0;
+            font-size: 9px;
+            padding: 8px 4px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     }
 
@@ -3168,7 +3502,10 @@
             font-size: 18px;
         }
 
-        .back-btn,
+        .back-btn {
+            font-size: 12px;
+        }
+
         .control-btn,
         .pagination-btn {
             padding: 10px 18px;
@@ -3251,6 +3588,18 @@
     .players-table td.win-cell { color: #A0522D; font-weight: 600; }
     .players-table td.loss-cell { color: #f44336; font-weight: 600; }
 
+    #registered-table-body td:first-child {
+        width: 100%;
+    }
+
+    #registered-table-body td:last-child {
+        text-align: right;
+    }
+
+    #registered-table-body td.no-games {
+        text-align: center;
+    }
+
     /* ══════════════════════════════════════════════════════════════
    PREMIUM PLAYER PROFILE OVERLAY — replaces the old
    #player-history-overlay block (and everything below it down to
@@ -3322,10 +3671,7 @@
     top: 18px;
     right: 18px;
     margin: 0;
-    padding: 8px 20px;
     font-size: 11px;
-    background: rgba(0, 0, 0, 0.35);
-    border-color: rgba(255, 255, 255, 0.35);
 }
 
 .pp-avatar {
@@ -3574,13 +3920,30 @@
 .player-section.winner {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 0 16px rgba(160, 82, 45, 0.12);
 }
+
+/* ── DAMA KINGS running highlight: purely additive. Wraps each letter in a
+   span (see markup) and toggles a single "active" letter at a time via a
+   tiny JS ping-pong loop. The default (inactive) state intentionally sets
+   no color/background, so every letter keeps inheriting the original
+   .start-title gradient text-fill exactly as before; only the active
+   letter is overridden to a glowing red, with a smooth CSS transition so
+   the sweep reads as a flowing highlight rather than a hard jump. ── */
+.start-title .dk-letter {
+    display: inline-block;
+    transition: color 0.18s ease, -webkit-text-fill-color 0.18s ease, text-shadow 0.18s ease;
+}
+.start-title .dk-letter.dk-active {
+    color: #ff3b30;
+    -webkit-text-fill-color: #ff3b30;
+    text-shadow: 0 0 10px rgba(255, 59, 48, 0.85), 0 0 24px rgba(255, 59, 48, 0.5);
+}
 </style>
 </head>
 <body>
 
     <div id="start-screen" onclick="handleAdminTap()">
         <div id="online-indicator" onclick="openOnlinePlayersModal()">ONLINE: 0</div>
-        <h1 class="start-title" id="admin-tap-trigger">DAMA KINGS</h1>
+        <h1 class="start-title" id="admin-tap-trigger"><span class="dk-letter">D</span><span class="dk-letter">A</span><span class="dk-letter">M</span><span class="dk-letter">A</span> <span class="dk-letter">K</span><span class="dk-letter">I</span><span class="dk-letter">N</span><span class="dk-letter">G</span><span class="dk-letter">S</span></h1>
         <div class="start-container no-box">
             <button class="continue-btn start-play-circle" onclick="startGame()">▷</button>
         </div>
@@ -3598,8 +3961,8 @@
 
             <div class="profile-section">
                 <label class="input-label" for="profile-username"></label>
-                <input type="text" id="profile-username" class="username-input" placeholder="USERNAME" maxlength="20" autocomplete="off">
-                <button class="continue-btn" onclick="saveProfileUsername()">Save Username</button>
+                <input type="text" id="profile-username" class="username-input" placeholder="USERNAME" maxlength="10" autocomplete="off">
+                <button class="continue-btn" onclick="saveProfileUsername()">Save</button>
             </div>
 
             <div class="profile-section profile-actions">
@@ -3645,24 +4008,19 @@
         </div>
 
         <div class="dashboard-tabs">
-            <button class="tab-btn active" onclick="switchTab('history')">Game History</button>
-            <button class="tab-btn" onclick="switchTab('leaderboard')">Leaderboards</button>
+            <button class="tab-btn active" onclick="switchTab('history')">History</button>
             <button class="tab-btn" onclick="switchTab('players')">Players</button>
+            <button class="tab-btn" onclick="switchTab('register')">Register</button>
         </div>
 
+        <div class="dashboard-content-wrap">
         <div id="history-tab" class="tab-content active">
             <div class="dashboard-controls">
                 <div class="control-row">
-                    <input type="text" id="search-username" class="control-input" placeholder="Search by Username">
-                </div>
-                <div class="control-row">
-                    <input type="date" id="filter-date" class="control-input">
-                    <button class="control-btn" onclick="applyFilters()">Apply Filters</button>
-                    <button class="control-btn secondary" onclick="clearFilters()">Clear</button>
-                </div>
-                <div class="control-row">
-                    <button class="control-btn" onclick="refreshHistory()">Refresh</button>
                     <button class="control-btn danger" onclick="showDeleteConfirm()">Delete All</button>
+                </div>
+                <div class="control-row">
+                    <button class="control-btn secondary" onclick="showClearLeaderboardsConfirm()">Clear Leaderboards</button>
                 </div>
             </div>
 
@@ -3692,27 +4050,6 @@
             </div>
         </div>
 
-        <div id="leaderboard-tab" class="tab-content">
-            <div class="leaderboard-controls">
-                <div class="leaderboard-form">
-                    <div class="form-group">
-                        <label class="form-label" for="new-player-name">Player Name</label>
-                        <input type="text" id="new-player-name" class="form-input" placeholder="Enter player name" maxlength="20">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label" for="new-player-score">Score</label>
-                        <input type="number" id="new-player-score" class="form-input" placeholder="Enter score" min="0">
-                    </div>
-                    <button class="control-btn" onclick="addLeaderboardEntry()">Add Entry</button>
-                    <button class="control-btn danger" onclick="deleteAllLeaderboard()">Delete All</button>
-                </div>
-            </div>
-
-            <div class="leaderboard-container" id="leaderboard-admin-container">
-                <div class="no-games">No leaderboard entries</div>
-            </div>
-        </div>
-
         <div id="players-tab" class="tab-content">
             <div class="dashboard-controls">
                 <div class="control-row">
@@ -3723,8 +4060,7 @@
                     <button class="control-btn secondary player-sort-btn" id="sort-btn-cycle" onclick="cyclePlayerSort()">Sort: Win Rate</button>
                 </div>
                 <div class="control-row player-filter-row">
-                    <button class="control-btn secondary player-filter-btn" id="filter-btn-winners" onclick="togglePlayerFilter('winners')">Show Only Winners</button>
-                    <button class="control-btn secondary player-filter-btn" id="filter-btn-losers" onclick="togglePlayerFilter('losers')">Show Only Losers</button>
+                    <button class="control-btn secondary player-filter-btn" id="filter-btn-cycle" onclick="cyclePlayerFilter()">Show Only Winners</button>
                 </div>
             </div>
             <div class="players-table-wrap">
@@ -3739,6 +4075,34 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <div id="register-tab" class="tab-content">
+            <div class="dashboard-controls">
+                <div class="control-row">
+                    <input type="text" id="register-username-input" class="control-input" placeholder="Enter Username">
+                    <button class="control-btn" onclick="registerUsername()">Register</button>
+                    <button class="control-btn" onclick="pasteAndRegisterUsernames()">Paste</button>
+                    <button class="control-btn danger" onclick="deleteAllRegisteredUsernames()">Delete</button>
+                </div>
+                <div class="control-row">
+                    <input type="text" id="search-registered" class="control-input" placeholder="Search Registered Username">
+                </div>
+            </div>
+            <div class="players-table-wrap">
+                <table class="players-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="registered-table-body">
+                        <tr><td colspan="2" class="no-games">No registered usernames</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
         </div>
     </div>
 
@@ -3758,6 +4122,14 @@
         <div class="surrender-buttons">
             <button onclick="confirmDeleteAll()">Delete</button>
             <button onclick="closeDeleteConfirm()">Cancel</button>
+        </div>
+    </div>
+
+    <div id="clear-leaderboards-confirm-overlay">
+        <div class="delete-confirm-message">Are you sure?</div>
+        <div class="surrender-buttons">
+            <button onclick="confirmClearLeaderboards()">Delete</button>
+            <button onclick="closeClearLeaderboardsConfirm()">Cancel</button>
         </div>
     </div>
 
@@ -3811,9 +4183,7 @@
         </div>
     </div>
 
-    <div id="host-join-screen" onclick="handleSpectateTap()">
-        <h1 class="start-title">GOODLUCK!</h1>
-        <div class="player-username-display" id="display-username"></div>
+    <div id="host-join-screen">
         <div class="start-container no-box">
             <div class="host-join-buttons">
                 <button class="host-join-btn" onclick="hostGame()">Host</button>
@@ -3843,6 +4213,7 @@
 
     <div id="game-screen">
         <div id="room-id-corner">ROOM <span class="room-id-corner-value" id="room-id-corner-value">---</span></div>
+        <div id="round-score-corner">SCORE: <span class="round-score-corner-value" id="round-score-corner-value">0/3</span></div>
         <div id="inactivity-timer">30</div>
         <div id="spectator-white-name" class="spectator-player-name" style="display: none;"></div>
         <div id="spectator-white-score" class="spectator-player-score" style="display: none;"></div>
@@ -3924,6 +4295,18 @@
         <div class="winner-buttons">
             <button class="winner-btn" onclick="requestRematch()">REMATCH</button>
             <button class="winner-btn secondary" onclick="goToMainMenu()">MAIN MENU</button>
+        </div>
+        <div class="winner-buttons" id="spectator-winner-buttons" style="display: none;">
+            <button class="winner-btn secondary" onclick="goToMainMenu()">MENU</button>
+        </div>
+    </div>
+
+    <!-- Synchronized win/score black-screen transition overlay: purely additive,
+         shown briefly whenever a player wins or scores, on top of everything else. -->
+    <div id="win-transition-overlay">
+        <div class="wt-text-wrap">
+            <div class="wt-username" id="wt-username">PLAYER</div>
+            <div class="wt-winner-label">WINNER</div>
         </div>
     </div>
 
@@ -4025,18 +4408,29 @@
     // Match score tracking (persists across rematches within the same room)
     let myScore = 0;
     let opponentScore = 0;
+    // Tracks how many rounds have been played in the current best-of-3
+    // match. Rounds 1 and 2 auto-restart; the winner page only shows once
+    // this reaches 3.
+    let roundsPlayed = 0;
     // Players tab sort mode: 'newest' | 'winrate' | 'wins' | 'losses'. Cycled via
     // the single "Sort" button (Newest → Win Rate → Wins → Losses → Newest,
     // repeating). 'newest' is the default sort applied on load: it orders
     // players by their registration/creation timestamp in descending order
     // (most recently added players first, oldest players last).
     let currentPlayerSort = 'newest';
-    // Players tab filter mode: 'none' | 'winners' | 'losers'. Toggled via the
-    // "Show Only Winners" / "Show Only Losers" buttons; works together with
-    // whatever sort mode is currently active.
+    // Players tab filter mode: 'none' | 'winners' | 'losers'. Cycled via the
+    // single "Show Only Winners / Losers" button (None → Winners → Losers →
+    // None, repeating); works together with whatever sort mode is currently
+    // active.
     let currentPlayerFilter = 'none';
     const PLAYER_SORT_CYCLE = ['newest', 'winrate', 'wins', 'losses'];
     const PLAYER_SORT_LABELS = { newest: 'Sort: Newest', winrate: 'Sort: Win Rate', wins: 'Sort: Wins', losses: 'Sort: Losses' };
+    const PLAYER_FILTER_CYCLE = ['none', 'winners', 'losers'];
+    // Label shown reflects the CURRENT filter state's button text: 'none'
+    // shows "Show Only Winners" (the first filter you'll land on), 'winners'
+    // shows "Show Only Losers" (the next filter you'll land on), and
+    // 'losers' shows "Show All" (clicking resets back to no filter).
+    const PLAYER_FILTER_LABELS = { none: 'Show Only Winners', winners: 'Show Only Losers', losers: 'Show All' };
     // Find a Match: session id used to identify this client while waiting in the
     // matchmaking queue, and a reference to the active queue listener (if any)
     // so it can be detached on match or cancel.
@@ -4073,6 +4467,16 @@
     const winnerScreenEl = document.getElementById('winner-screen');
     const winnerUsernameEl = document.getElementById('winner-username');
     const winnerReasonEl = document.getElementById('winner-reason');
+    // ── Synchronized win/score black-screen transition: DOM refs + tracking
+    // state. Purely additive — does not replace winnerScreenEl or any of its
+    // existing behavior. ──
+    const winTransitionOverlayEl = document.getElementById('win-transition-overlay');
+    const winTransitionUsernameEl = document.getElementById('wt-username');
+    let winTransitionHideTimer = null;
+    let lastWinTransitionTs = 0;
+    let winTransitionBaselineCaptured = false;
+    let lastSpectatorWinTransitionTs = 0;
+    let spectatorWinTransitionBaselineCaptured = false;
     const gameScreenEl = document.getElementById('game-screen');
     const spectatorWhiteNameEl = document.getElementById('spectator-white-name');
     const spectatorBlackNameEl = document.getElementById('spectator-black-name');
@@ -4085,6 +4489,8 @@
     const rematchUsernameEl = document.getElementById('rematch-username');
     const roomIdCornerEl = document.getElementById('room-id-corner');
     const roomIdCornerValueEl = document.getElementById('room-id-corner-value');
+    const roundScoreCornerEl = document.getElementById('round-score-corner');
+    const roundScoreCornerValueEl = document.getElementById('round-score-corner-value');
     const onlineIndicatorEl = document.getElementById('online-indicator');
 
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -4158,6 +4564,33 @@
         .then(d => { playerIPAddress = d.ip; })
         .catch(() => { playerIPAddress = 'Unknown'; });
 
+    // ── Builds the "other players online" list from the raw presence data.
+    // Opening a second tab creates a second presence entry (each tab has its
+    // own Firebase connection), so relying only on "p.key !== myPresenceRef.key"
+    // to exclude yourself would still show your OTHER tab as if it were a
+    // separate online player with a duplicate username. This instead excludes
+    // every presence entry that shares the current player's username, and
+    // also de-duplicates any remaining entries by username, so a single
+    // player never appears more than once in the Online Players list. ──
+    function getOtherPlayersOnline() {
+        if (!Array.isArray(onlinePresenceList)) return [];
+        const myUsername = (player1Username || 'Guest').toLowerCase();
+        const filtered = onlinePresenceList.filter(p => {
+            if (myPresenceRef && p.key === myPresenceRef.key) return false;
+            if ((p.username || 'Guest').toLowerCase() === myUsername) return false;
+            return true;
+        });
+        const seenUsernames = new Set();
+        const deduped = [];
+        filtered.forEach(p => {
+            const key = (p.username || 'Guest').toLowerCase();
+            if (seenUsernames.has(key)) return;
+            seenUsernames.add(key);
+            deduped.push(p);
+        });
+        return deduped;
+    }
+
     // ── ONLINE PLAYERS INDICATOR: registers this client's presence in Firebase
     // and keeps a live count of connected clients displayed on the main screen ──
     function initOnlinePresence() {
@@ -4182,14 +4615,14 @@
 
         window.firebaseOnValue(presenceRef, (snapshot) => {
             const data = snapshot.exists() ? snapshot.val() : {};
-            onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame), onFirstPage: (p && p.onFirstPage !== undefined) ? !!p.onFirstPage : true }));
+            onlinePresenceList = Object.entries(data).map(([key, p]) => ({ key: key, username: (p && p.username) ? p.username : 'Guest', inGame: !!(p && p.inGame), onFirstPage: (p && p.onFirstPage !== undefined) ? !!p.onFirstPage : true, roomId: (p && p.roomId) ? p.roomId : null }));
             // ── Real-time online indicator: this presence listener fires
             // continuously (via Firebase's live onValue subscription) any
             // time a player connects or disconnects, so the count shown in
             // the top-right indicator always reflects who is online right
             // now, with no manual refresh or polling needed. The current/own
             // player is excluded from this count. ──
-            const otherPlayersOnline = onlinePresenceList.filter(p => !myPresenceRef || p.key !== myPresenceRef.key);
+            const otherPlayersOnline = getOtherPlayersOnline();
             if (onlineIndicatorEl) onlineIndicatorEl.textContent = 'ONLINE: ' + otherPlayersOnline.length;
             renderOnlinePlayersList();
             // ── Keep the Players tab's online-status filtering in sync in real
@@ -4374,7 +4807,7 @@
             checkPendingChallengeOnReturn();
         }
         if (!myPresenceRef) return;
-        window.firebaseUpdate(myPresenceRef, { inGame: inGame });
+        window.firebaseUpdate(myPresenceRef, { inGame: inGame, roomId: inGame ? currentRoomId : null });
     }
 
     // ── One-time read of this player's challenge node, used only when
@@ -4400,21 +4833,21 @@
         const modalEl = document.getElementById('online-players-modal');
         if (!modalEl || !modalEl.classList.contains('show')) return;
         const bodyEl = document.getElementById('online-players-body');
-        const otherPlayersOnline = onlinePresenceList.filter(p => !myPresenceRef || p.key !== myPresenceRef.key);
+        const otherPlayersOnline = getOtherPlayersOnline();
         if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame && p.onFirstPage ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : (!p.onFirstPage ? '<div class="online-player-unavailable">Unavailable</div>' : '<div class="online-player-dot"></div>')) + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame && p.onFirstPage ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">' + (p.roomId ? '<span class="online-player-spectate-btn" onclick="event.stopPropagation(); spectateOnlinePlayer(\'' + p.roomId + '\')">👁</span>' : '') + 'PLAYING</div>' : (!p.onFirstPage ? '<div class="online-player-unavailable">Unavailable</div>' : '<div class="online-player-dot"></div>')) + '</div>').join('') + '</div>';
         }
     }
 
     function openOnlinePlayersModal() {
         const bodyEl = document.getElementById('online-players-body');
-        const otherPlayersOnline = onlinePresenceList.filter(p => !myPresenceRef || p.key !== myPresenceRef.key);
+        const otherPlayersOnline = getOtherPlayersOnline();
         if (otherPlayersOnline.length === 0) {
             bodyEl.innerHTML = '<div class="no-leaderboard">No players online</div>';
         } else {
-            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame && p.onFirstPage ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">PLAYING</div>' : (!p.onFirstPage ? '<div class="online-player-unavailable">Unavailable</div>' : '<div class="online-player-dot"></div>')) + '</div>').join('') + '</div>';
+            bodyEl.innerHTML = '<div class="online-players-list">' + otherPlayersOnline.map((p, i) => '<div class="online-player-item"' + (myPresenceRef && p.key !== myPresenceRef.key && !p.inGame && p.onFirstPage ? ' onclick="challengePlayer(\'' + p.key + '\')"' : '') + '><div class="online-player-index">' + (i + 1) + '</div><div class="online-player-name">' + p.username + '</div>' + (p.inGame ? '<div class="online-player-playing">' + (p.roomId ? '<span class="online-player-spectate-btn" onclick="event.stopPropagation(); spectateOnlinePlayer(\'' + p.roomId + '\')">👁</span>' : '') + 'PLAYING</div>' : (!p.onFirstPage ? '<div class="online-player-unavailable">Unavailable</div>' : '<div class="online-player-dot"></div>')) + '</div>').join('') + '</div>';
         }
         document.getElementById('online-players-modal').classList.add('show');
     }
@@ -4447,6 +4880,20 @@
     function hideRoomIdCorner() {
         if (!roomIdCornerEl) return;
         roomIdCornerEl.classList.remove('show');
+    }
+
+    // ── Shows "SCORE: {roundsPlayed}/3" in the top-right corner during an
+    // online multiplayer match, tracking progress through the best-of-3
+    // series. Hidden for practice matches against the Expert AI, which are
+    // not played as a best-of-3 series. ──
+    function updateRoundScoreDisplay() {
+        if (!roundScoreCornerEl || !roundScoreCornerValueEl) return;
+        if (isVsAI || !currentRoomId) {
+            roundScoreCornerEl.classList.remove('show');
+            return;
+        }
+        roundScoreCornerValueEl.textContent = (myScore || 0) + '/3';
+        roundScoreCornerEl.classList.add('show');
     }
 
     async function openProfile() {
@@ -4509,10 +4956,13 @@
 
     async function loadPublicLeaderboard() {
         const now = Date.now();
-        // Use cache if still fresh
-        if (leaderboardCache && (now - leaderboardCacheTime) < LEADERBOARD_CACHE_TTL) {
+        // Show cached data immediately (even if stale) so the modal never sits empty/flickers,
+        // then quietly refresh in the background if the cache is past its TTL.
+        if (leaderboardCache) {
             renderPublicLeaderboard(leaderboardCache);
-            return;
+            if ((now - leaderboardCacheTime) < LEADERBOARD_CACHE_TTL) {
+                return;
+            }
         }
 
         const leaderboardRef = window.firebaseRef(window.firebaseDB, 'leaderboard');
@@ -4556,7 +5006,7 @@
                         <div class="lb-podium-avatar">${getInitials(entry.name)}</div>
                         <div class="lb-podium-name">${entry.name}</div>
                         <div class="lb-podium-score">${entry.score.toLocaleString()}</div>
-                        <div class="lb-podium-base">${rank}</div>
+                        <div class="lb-podium-base">${rank === 1 ? '1st' : rank === 2 ? '2nd' : '3rd'}</div>
                     </div>`);
             }
             parts.push('</div>');
@@ -4590,14 +5040,14 @@
         if (tab === 'history') {
             document.querySelector('.tab-btn:nth-child(1)').classList.add('active');
             document.getElementById('history-tab').classList.add('active');
-        } else if (tab === 'leaderboard') {
-            document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
-            document.getElementById('leaderboard-tab').classList.add('active');
-            loadAdminLeaderboard();
         } else if (tab === 'players') {
-            document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+            document.querySelector('.tab-btn:nth-child(2)').classList.add('active');
             document.getElementById('players-tab').classList.add('active');
             refreshPlayersList();
+        } else if (tab === 'register') {
+            document.querySelector('.tab-btn:nth-child(3)').classList.add('active');
+            document.getElementById('register-tab').classList.add('active');
+            refreshRegisteredUsernames();
         }
     }
 
@@ -4687,6 +5137,91 @@
         await window.firebaseSet(window.firebaseRef(window.firebaseDB, 'usernameResetSignal'), Date.now());
     }
 
+    async function registerUsername() {
+        const input = document.getElementById('register-username-input');
+        const username = input.value.trim();
+        if (!username) {
+            alert('Please enter a username.');
+            return;
+        }
+        const registeredRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames');
+        await window.firebasePush(registeredRef, { username, timestamp: Date.now() });
+        input.value = '';
+        refreshRegisteredUsernames();
+    }
+
+    async function pasteAndRegisterUsernames() {
+        let clipboardText = '';
+        try {
+            clipboardText = await navigator.clipboard.readText();
+        } catch (err) {
+            alert('Could not read clipboard. Please allow clipboard access and try again.');
+            return;
+        }
+
+        const usernames = clipboardText
+            .split(/[\r\n,]+/)
+            .map(u => u.trim())
+            .filter(u => u.length > 0);
+
+        if (usernames.length === 0) {
+            alert('Clipboard is empty or contains no usernames.');
+            return;
+        }
+
+        const registeredRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames');
+        for (const username of usernames) {
+            await window.firebasePush(registeredRef, { username, timestamp: Date.now() });
+        }
+
+        document.getElementById('register-username-input').value = '';
+        refreshRegisteredUsernames();
+    }
+
+    async function refreshRegisteredUsernames() {
+        const registeredRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames');
+        const snapshot = await window.firebaseGet(registeredRef);
+        const tbody = document.getElementById('registered-table-body');
+        const searchVal = (document.getElementById('search-registered').value || '').toLowerCase();
+
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const entries = Object.entries(data)
+                .filter(([id, entry]) => !searchVal || entry.username.toLowerCase().includes(searchVal))
+                .sort((a, b) => (a[1].timestamp || 0) - (b[1].timestamp || 0));
+            if (entries.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="2" class="no-games">No registered usernames</td></tr>';
+                return;
+            }
+            tbody.innerHTML = entries.map(([id, entry]) => {
+                const losses = entry.losses || 0;
+                const livesLeft = Math.max(3 - losses, 0);
+                const livesIndicator = '❤️'.repeat(livesLeft) + '🖤'.repeat(3 - livesLeft);
+                return `
+                <tr>
+                    <td>${entry.username}</td>
+                    <td><span class="lives-indicator">${livesIndicator}</span> <button class="action-btn delete" onclick="deleteRegisteredUsername('${id}')">🗑️</button></td>
+                </tr>`;
+            }).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="2" class="no-games">No registered usernames</td></tr>';
+        }
+    }
+
+    async function deleteRegisteredUsername(id) {
+        if (!confirm('Are you sure you want to delete this registered username?')) return;
+        const entryRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames/' + id);
+        await window.firebaseRemove(entryRef);
+        refreshRegisteredUsernames();
+    }
+
+    async function deleteAllRegisteredUsernames() {
+        if (!confirm('Are you sure you want to delete all registered usernames?')) return;
+        const registeredRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames');
+        await window.firebaseRemove(registeredRef);
+        refreshRegisteredUsernames();
+    }
+
     function editLeaderboardEntry(id) {
         const entry = allLeaderboardData.find(e => e.id === id);
         if (!entry) return;
@@ -4728,12 +5263,26 @@
         const name = game.winnerUsername;
         if (!name) return;
         if (!confirm('Add "' + name + '" to the leaderboard?')) return;
-        const existingEntry = allLeaderboardData.find(e => e.name === name);
+        const leaderboardRef = window.firebaseRef(window.firebaseDB, 'leaderboard');
+        // Look up the current leaderboard directly from Firebase (instead of the
+        // local allLeaderboardData cache, which may still be empty if the admin
+        // hasn't opened the Leaderboard tab yet) so an existing username is
+        // always found and incremented instead of duplicated.
+        const snapshot = await window.firebaseGet(leaderboardRef);
+        let existingEntry = null;
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            for (const [id, entry] of Object.entries(data)) {
+                if (entry.name === name) {
+                    existingEntry = { id, ...entry };
+                    break;
+                }
+            }
+        }
         if (existingEntry) {
             const entryRef = window.firebaseRef(window.firebaseDB, 'leaderboard/' + existingEntry.id);
             await window.firebaseUpdate(entryRef, { score: existingEntry.score + 1 });
         } else {
-            const leaderboardRef = window.firebaseRef(window.firebaseDB, 'leaderboard');
             await window.firebasePush(leaderboardRef, { name, score: 1, timestamp: Date.now() });
         }
         alert('Added to leaderboard.');
@@ -4755,19 +5304,21 @@
         if (btn) btn.textContent = PLAYER_SORT_LABELS[currentPlayerSort] || 'Sort: Newest';
     }
 
-    // ── Filter control for the Players tab: toggles "Show Only Winners" /
-    // "Show Only Losers". Clicking an already-active filter turns it back off
-    // (reverting to showing all players). Works together with whatever sort
-    // mode is currently selected — refreshPlayersList() applies the filter
-    // and then sorts the filtered results. ──
-    function togglePlayerFilter(type) {
-        currentPlayerFilter = (currentPlayerFilter === type) ? 'none' : type;
-        document.querySelectorAll('.player-filter-btn').forEach(btn => btn.classList.remove('active'));
-        if (currentPlayerFilter !== 'none') {
-            const activeBtn = document.getElementById('filter-btn-' + currentPlayerFilter);
-            if (activeBtn) activeBtn.classList.add('active');
-        }
+    // ── Filter control for the Players tab: single button that cycles
+    // through None → Winners → Losers → None, repeating. Works together with
+    // whatever sort mode is currently selected — refreshPlayersList() applies
+    // the filter and then sorts the filtered results. ──
+    function cyclePlayerFilter() {
+        const currentIndex = PLAYER_FILTER_CYCLE.indexOf(currentPlayerFilter);
+        currentPlayerFilter = PLAYER_FILTER_CYCLE[(currentIndex + 1) % PLAYER_FILTER_CYCLE.length];
+        updatePlayerFilterButtonLabel();
         refreshPlayersList();
+    }
+
+    function updatePlayerFilterButtonLabel() {
+        const btn = document.getElementById('filter-btn-cycle');
+        if (btn) btn.textContent = PLAYER_FILTER_LABELS[currentPlayerFilter] || 'Show Only Winners';
+        if (btn) btn.classList.toggle('active', currentPlayerFilter !== 'none');
     }
 
     // ── PLAYERS TAB: aggregate gameHistory into a per-player stats table ──
@@ -4777,6 +5328,7 @@
         const tbody = document.getElementById('players-table-body');
 
         updatePlayerSortButtonLabel();
+        updatePlayerFilterButtonLabel();
 
         if (!snapshot.exists()) {
             tbody.innerHTML = '<tr><td colspan="1" class="no-games">No players found</td></tr>';
@@ -4826,15 +5378,6 @@
         const searchVal = (document.getElementById('search-player').value || '').toLowerCase();
         let players = Object.values(playersMap)
             .filter(p => !searchVal || p.name.toLowerCase().includes(searchVal));
-
-        // ── ONLINE-ONLY FILTER: the Players tab list should only ever show
-        // players who are currently online. onlinePresenceList is kept live
-        // by the real-time Firebase 'presence' listener in initOnlinePresence
-        // (see above), so cross-referencing against it here means this list
-        // always reflects who is online right now — any player who is not
-        // currently connected is excluded/hidden from this list entirely. ──
-        const onlineUsernames = new Set(onlinePresenceList.map(p => p.username));
-        players = players.filter(p => onlineUsernames.has(p.name));
 
         // Apply the active Show Only Winners / Show Only Losers filter before
         // sorting, so the filtered results remain sorted according to the
@@ -4891,6 +5434,7 @@
 
     document.addEventListener('input', function(e) {
         if (e.target && e.target.id === 'search-player') refreshPlayersList();
+        if (e.target && e.target.id === 'search-registered') refreshRegisteredUsernames();
     });
 
     function openPlayerHistory(name) {
@@ -5073,14 +5617,7 @@
 
     function handleSpectateTap(e) {
         if (e && (e.target.tagName === 'INPUT' || e.target.tagName === 'BUTTON')) return;
-        spectateTapCount++;
-        if (spectateTapTimeout) clearTimeout(spectateTapTimeout);
-        if (spectateTapCount === 5) {
-            spectateTapCount = 0;
-            spectateGame();
-            return;
-        }
-        spectateTapTimeout = setTimeout(() => { spectateTapCount = 0; }, 1000);
+        spectateGame();
     }
 
     function showAdminPassword() {
@@ -5189,7 +5726,7 @@
             const matchId = game.id.substring(0, 8).toUpperCase();
             const isDraw = !!game.isDraw;
 
-            const statusLabel = isDraw ? 'Draw' : game.reason;
+            const statusLabel = isDraw ? 'Draw' : (game.reason === 'Opponent Disconnected' ? 'Disconnected' : game.reason);
             const statusClass = isDraw ? 'game-status draw-status' : 'game-status';
 
             const playerSectionsHtml = isDraw ? `
@@ -5220,7 +5757,6 @@
                         <span class="match-id">ID: ${matchId}</span>
                         <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
                             <span class="${statusClass}">${statusLabel}</span>
-                            <button class="control-btn" style="padding:4px 10px;font-size:11px;" onclick="addGameToLeaderboard('${game.id}')">+</button>
                         </div>
                     </div>
                     <div class="game-card-body">${playerSectionsHtml}
@@ -5313,12 +5849,20 @@
         displayGameHistory();
     }
 
-    function clearFilters() {
-        document.getElementById('search-username').value = '';
-        document.getElementById('filter-date').value = '';
+    async function clearFilters() {
         filteredGamesData = [...allGamesData];
         currentPage = 1;
         displayGameHistory();
+        const leaderboardRef = window.firebaseRef(window.firebaseDB, 'leaderboard');
+        await window.firebaseRemove(leaderboardRef);
+    }
+
+    function showClearLeaderboardsConfirm() { document.getElementById('clear-leaderboards-confirm-overlay').classList.add('show'); }
+    function closeClearLeaderboardsConfirm() { document.getElementById('clear-leaderboards-confirm-overlay').classList.remove('show'); }
+
+    async function confirmClearLeaderboards() {
+        await clearFilters();
+        closeClearLeaderboardsConfirm();
     }
 
     function refreshHistory() { loadGameHistory(); }
@@ -5351,6 +5895,77 @@
             winnerIP: winnerIP || null,
             loserIP: loserIP || null
         });
+
+        if (!isDraw && winnerUsername) {
+            await autoAddRegisteredWinnerToLeaderboard(winnerUsername);
+        }
+
+        if (!isDraw && loserUsername) {
+            await removeRegisteredUsernameOnLoss(loserUsername);
+        }
+    }
+
+    // ── Automatically removes a losing player's username from the Admin
+    // Dashboard's registration page. Only usernames registered through the
+    // Admin Dashboard registration page are affected. When a registered
+    // player accumulates 3 losses, their entry is deleted from
+    // registeredUsernames so they no longer appear on the register page. ──
+    async function removeRegisteredUsernameOnLoss(name) {
+        const registeredRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames');
+        const registeredSnapshot = await window.firebaseGet(registeredRef);
+        if (!registeredSnapshot.exists()) return;
+
+        const data = registeredSnapshot.val();
+        for (const [id, entry] of Object.entries(data)) {
+            if (entry.username === name) {
+                const entryRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames/' + id);
+                const losses = (entry.losses || 0) + 1;
+                if (losses >= 3) {
+                    await window.firebaseRemove(entryRef);
+                } else {
+                    await window.firebaseUpdate(entryRef, { losses });
+                }
+            }
+        }
+    }
+
+    // ── Automatically adds a winning registered player's score to the
+    // leaderboard. Only usernames registered through the Admin Dashboard
+    // registration page are eligible. If the player already has a
+    // leaderboard entry, their winning score is added on top of their
+    // existing score instead of creating a duplicate entry. ──
+    async function autoAddRegisteredWinnerToLeaderboard(name) {
+        const registeredRef = window.firebaseRef(window.firebaseDB, 'registeredUsernames');
+        const registeredSnapshot = await window.firebaseGet(registeredRef);
+        let isRegistered = false;
+        if (registeredSnapshot.exists()) {
+            const data = registeredSnapshot.val();
+            isRegistered = Object.values(data).some(entry => entry.username === name);
+        }
+        if (!isRegistered) return;
+
+        const leaderboardRef = window.firebaseRef(window.firebaseDB, 'leaderboard');
+        const snapshot = await window.firebaseGet(leaderboardRef);
+        let existingEntry = null;
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            for (const [id, entry] of Object.entries(data)) {
+                if (entry.name === name) {
+                    existingEntry = { id, ...entry };
+                    break;
+                }
+            }
+        }
+        if (existingEntry) {
+            const entryRef = window.firebaseRef(window.firebaseDB, 'leaderboard/' + existingEntry.id);
+            await window.firebaseUpdate(entryRef, { score: existingEntry.score + 1 });
+        } else {
+            await window.firebasePush(leaderboardRef, { name, score: 1, timestamp: Date.now() });
+        }
+
+        // Invalidate the public leaderboard cache so the first page's
+        // leaderboard bubble reflects the updated score right away.
+        leaderboardCache = null;
     }
 
     // ── Atomic single-write guard: attempts to atomically flip
@@ -5411,22 +6026,141 @@
             await recordGameHistoryOnce(winnerUsername, loserUsername, reason, winnerIP, loserIP, isDraw);
         }
 
+        // ── Best-of-3 auto-restart (online multiplayer only): rounds restart
+        // automatically, with neither player needing to accept a rematch.
+        // The winner page only appears once a player's score actually
+        // reaches 3, declaring that player the winner. A genuine opponent
+        // disconnect always ends the match immediately instead of waiting
+        // for a score of 3, since there is no one left to keep playing
+        // rounds with. ──
+        let showFinalWinnerScreen = true;
+        let finalWinnerUsername = isDraw ? 'DRAW' : winnerUsername;
+        const isAbandonment = reason === 'Disconnect';
+
         if (currentRoomId) {
             const roomRef = window.firebaseRef(window.firebaseDB, 'rooms/' + currentRoomId);
-            const newScores = applyScoreForResult(isDraw ? 0 : winningPlayerNumber);
-            await window.firebaseUpdate(roomRef, {
-                winner: isDraw ? 0 : winningPlayerNumber,
-                winnerUsername: isDraw ? 'DRAW' : winnerUsername,
-                matchReason: reason,
-                status: 'finished',
-                p1Score: newScores.p1Score,
-                p2Score: newScores.p2Score
+
+            // ── FIX: checkmate is detected independently by BOTH clients (each
+            // client's board-sync listener calls checkWin()), so without a lock
+            // both clients would each apply their own score/round increment for
+            // the very same round, double-counting it and jumping straight from
+            // 0/3 to 2/3 instead of 1/3. This transaction ensures only the first
+            // client to reach this point actually applies the round's update;
+            // the other client's attempt aborts and simply picks up the result
+            // via its own room listener instead. ──
+            const roundLockRef = window.firebaseRef(window.firebaseDB, 'rooms/' + currentRoomId + '/roundLocked');
+            const lockResult = await window.firebaseRunTransaction(roundLockRef, (current) => {
+                if (current === true) {
+                    return;
+                }
+                return true;
             });
+
+            if (lockResult && lockResult.committed) {
+                const newScores = applyScoreForResult(isDraw ? 0 : winningPlayerNumber);
+                // ── FIX: use the authoritative roundsPlayed value from Firebase (not
+                // the local mirror, which can be stale) so that ending a round —
+                // including via surrender — always advances the best-of-3 series by
+                // exactly one round instead of ever jumping ahead and ending the
+                // whole match before 3 rounds have actually been played. ──
+                const roundsPlayedSnapshot = await window.firebaseGet(window.firebaseRef(window.firebaseDB, 'rooms/' + currentRoomId + '/roundsPlayed'));
+                const authoritativeRoundsPlayed = typeof roundsPlayedSnapshot.val() === 'number' ? roundsPlayedSnapshot.val() : (roundsPlayed || 0);
+                const newRoundsPlayed = authoritativeRoundsPlayed + 1;
+                roundsPlayed = newRoundsPlayed;
+                updateRoundScoreDisplay();
+
+                // ── FIX: the match only ends once a player's score actually reaches
+                // 3, not simply because 3 rounds have been played — so if the score
+                // is e.g. 2-1 after 3 rounds, the series keeps going instead of
+                // ending early. ──
+                if (!isAbandonment && newScores.p1Score < 3 && newScores.p2Score < 3) {
+                    showFinalWinnerScreen = false;
+                    await window.firebaseUpdate(roomRef, {
+                        winner: isDraw ? 0 : winningPlayerNumber,
+                        winnerUsername: isDraw ? 'DRAW' : winnerUsername,
+                        matchReason: reason,
+                        status: 'finished',
+                        p1Score: newScores.p1Score,
+                        p2Score: newScores.p2Score,
+                        roundsPlayed: newRoundsPlayed,
+                        // Skip the manual rematch request/accept step and go
+                        // straight into the next round automatically.
+                        rematchAccepted: true,
+                        // Timestamp both clients' room listeners watch to trigger
+                        // the synchronized win/score black-screen transition.
+                        winnerAnnouncedAt: Date.now()
+                    });
+                } else if (isAbandonment) {
+                    // The opponent disconnected — end the match right away with
+                    // this round's own winner instead of a best-of-3 comparison.
+                    await window.firebaseUpdate(roomRef, {
+                        winner: isDraw ? 0 : winningPlayerNumber,
+                        winnerUsername: finalWinnerUsername,
+                        matchReason: reason,
+                        status: 'finished',
+                        p1Score: newScores.p1Score,
+                        p2Score: newScores.p2Score,
+                        roundsPlayed: newRoundsPlayed,
+                        // Marks this as a final result so both clients' room
+                        // listeners know to show the winner page immediately.
+                        seriesOver: true,
+                        // Timestamp both clients' room listeners watch to trigger
+                        // the synchronized win/score black-screen transition.
+                        winnerAnnouncedAt: Date.now()
+                    });
+                } else {
+                    // A player's score has just reached 3 — decide the overall
+                    // best-of-3 winner by comparing total round wins.
+                    const p1Username = myPlayerNumber === 1 ? player1Username : opponentUsername;
+                    const p2Username = myPlayerNumber === 2 ? player1Username : opponentUsername;
+                    let matchWinningPlayerNumber = 0;
+                    if (newScores.p1Score > newScores.p2Score) matchWinningPlayerNumber = 1;
+                    else if (newScores.p2Score > newScores.p1Score) matchWinningPlayerNumber = 2;
+                    const matchIsDraw = matchWinningPlayerNumber === 0;
+                    finalWinnerUsername = matchIsDraw ? 'DRAW' : (matchWinningPlayerNumber === 1 ? p1Username : p2Username);
+
+                    await window.firebaseUpdate(roomRef, {
+                        winner: matchWinningPlayerNumber,
+                        winnerUsername: finalWinnerUsername,
+                        matchReason: reason,
+                        status: 'finished',
+                        p1Score: newScores.p1Score,
+                        p2Score: newScores.p2Score,
+                        roundsPlayed: newRoundsPlayed,
+                        // Marks this as a final result so both clients' room
+                        // listeners know to show the winner page immediately.
+                        seriesOver: true,
+                        // Timestamp both clients' room listeners watch to trigger
+                        // the synchronized win/score black-screen transition.
+                        winnerAnnouncedAt: Date.now()
+                    });
+                }
+            } else {
+                // Lost the lock race — the other client is already applying this
+                // round's update. Don't show a local winner screen from here;
+                // let the room listener pick up the result instead.
+                showFinalWinnerScreen = false;
+            }
+        }
+
+        // For online multiplayer matches, both clients' room listeners pick up
+        // the `winnerAnnouncedAt` timestamp written above and trigger the
+        // synchronized black-screen transition together. For matches with no
+        // room context (e.g. vs AI practice matches), there is no Firebase
+        // round-trip to drive that, so trigger it directly here instead.
+        if (!currentRoomId) {
+            triggerWinTransitionScreen(finalWinnerUsername);
         }
 
         setTimeout(() => {
-            gameScreenEl.style.display = 'none';
-            showWinnerScreen(isDraw ? 'DRAW' : winnerUsername, reason);
+            if (showFinalWinnerScreen) {
+                gameScreenEl.style.display = 'none';
+                showWinnerScreen(finalWinnerUsername, reason);
+            }
+            // For rounds 1 and 2, resetForRematch() — triggered automatically
+            // by the rematchAccepted flag above via the room listener —
+            // clears the fade-out and restarts the board without needing
+            // the winner screen to appear at all.
         }, 300);
     }
 
@@ -5440,6 +6174,35 @@
         document.getElementById('spectate-modal').classList.remove('show');
         document.getElementById('spectate-host-id').value = '';
         document.getElementById('spectate-error').textContent = '';
+    }
+
+    // ── Lets a player tap the eye button next to a PLAYING entry in the
+    // Online Players list to spectate that specific game directly, without
+    // needing to manually type in the 3-digit Host ID. ──
+    async function spectateOnlinePlayer(roomId) {
+        if (!roomId) return;
+        document.getElementById('online-players-modal').classList.remove('show');
+        document.getElementById('spectate-loading-screen').classList.add('show');
+
+        const roomRef = window.firebaseRef(window.firebaseDB, 'rooms/' + roomId);
+        const snapshot = await window.firebaseGet(roomRef);
+
+        if (!snapshot.exists()) {
+            document.getElementById('spectate-loading-screen').classList.remove('show');
+            return;
+        }
+
+        const roomData = snapshot.val();
+        if (roomData.status !== 'playing') {
+            document.getElementById('spectate-loading-screen').classList.remove('show');
+            return;
+        }
+
+        currentRoomId = roomId;
+        isSpectating = true;
+        spectatorConnected = false;
+        myPlayerNumber = null;
+        startSpectating(roomId);
     }
 
     async function joinSpectate() {
@@ -5539,7 +6302,17 @@
             render();
             updateSpectatorTurnIndicator();
 
-            if (data.winner !== undefined && data.winnerUsername) {
+            // ── Synchronized win/score black-screen transition for spectators
+            // watching the match, mirroring the players' own transition. ──
+            if (!spectatorWinTransitionBaselineCaptured) {
+                spectatorWinTransitionBaselineCaptured = true;
+                lastSpectatorWinTransitionTs = data.winnerAnnouncedAt || 0;
+            } else if (data.winnerAnnouncedAt && data.winnerAnnouncedAt !== lastSpectatorWinTransitionTs) {
+                lastSpectatorWinTransitionTs = data.winnerAnnouncedAt;
+                triggerWinTransitionScreen(data.winnerUsername);
+            }
+
+            if (data.winner !== undefined && data.winnerUsername && data.seriesOver) {
                 showWinnerScreen(data.winnerUsername, data.matchReason || '');
             }
             if (data.rematchAccepted) {
@@ -5605,7 +6378,8 @@
             openProfile();
             return;
         }
-        document.getElementById('display-username').textContent = player1Username;
+        const displayUsernameEl = document.getElementById('display-username');
+        if (displayUsernameEl) displayUsernameEl.textContent = player1Username;
         document.getElementById('start-screen').classList.add('hidden');
         broadcastOnFirstPage();
         document.getElementById('host-join-screen').classList.add('show');
@@ -5706,12 +6480,14 @@
                 rematchRequest: null,
                 p1Score: 0,
                 p2Score: 0,
+                roundsPlayed: 0,
                 p1SessionKey: p1SessionKey,
                 p2SessionKey: p2SessionKey,
                 gameStartTime: null,
                 p1Connected: true,
                 p2Connected: true,
-                historyRecorded: false
+                historyRecorded: false,
+                roundLocked: false
             });
 
             // Let the waiting player know which room to join
@@ -5821,6 +6597,7 @@
             rematchRequest: null,
             p1Score: 0,
             p2Score: 0,
+            roundsPlayed: 0,
             // Reconnection fields
             p1SessionKey: generateSessionKey(),
             p2SessionKey: null,
@@ -5833,7 +6610,14 @@
             // that no second client can also write a gameHistory record for
             // that same match. Reset to false whenever a fresh match begins
             // (see resetForRematch()).
-            historyRecorded: false
+            historyRecorded: false,
+            // Round-lock: flips to true the moment a client wins the round-end
+            // transaction in endMatch(), so the other client — which may detect
+            // the same round ending independently (e.g. checkmate is detected
+            // by both clients) — does not also apply the round's score/round
+            // increment. Reset to false whenever a fresh round begins (see
+            // resetForRematch()).
+            roundLocked: false
         });
 
         // Set up onDisconnect so presence flips to false automatically if the
@@ -5924,6 +6708,11 @@
     function startListeningToRoom(roomId) {
         if (isListeningToRoom) return;
         isListeningToRoom = true;
+        // Reset win-transition tracking for this room so a stale
+        // winnerAnnouncedAt value from before a reconnect doesn't
+        // incorrectly re-trigger the transition on the very first snapshot.
+        winTransitionBaselineCaptured = false;
+        lastWinTransitionTs = 0;
         const roomRef = window.firebaseRef(window.firebaseDB, 'rooms/' + roomId);
 
         roomListener = window.firebaseOnValue(roomRef, (snapshot) => {
@@ -5938,6 +6727,11 @@
             if (typeof data.p1Score === 'number' && typeof data.p2Score === 'number') {
                 myScore = myPlayerNumber === 1 ? data.p1Score : data.p2Score;
                 opponentScore = myPlayerNumber === 1 ? data.p2Score : data.p1Score;
+            }
+
+            if (typeof data.roundsPlayed === 'number') {
+                roundsPlayed = data.roundsPlayed;
+                updateRoundScoreDisplay();
             }
 
             if (isHost && data.players.player2 && data.status === 'playing' && !hasGameStarted) {
@@ -5963,7 +6757,21 @@
                 handleOpponentPresence(opponentConnected);
             }
 
-            if (data.winner !== undefined && data.winnerUsername) {
+            // ── Synchronized win/score black-screen transition: fires for
+            // every round win/score, not just the final series winner, since
+            // both clients receive this same `winnerAnnouncedAt` write via
+            // their room listener at essentially the same time. The first
+            // snapshot after (re)connecting only captures a baseline instead
+            // of triggering, so a stale/previous value never re-fires it. ──
+            if (!winTransitionBaselineCaptured) {
+                winTransitionBaselineCaptured = true;
+                lastWinTransitionTs = data.winnerAnnouncedAt || 0;
+            } else if (data.winnerAnnouncedAt && data.winnerAnnouncedAt !== lastWinTransitionTs) {
+                lastWinTransitionTs = data.winnerAnnouncedAt;
+                triggerWinTransitionScreen(data.winnerUsername);
+            }
+
+            if (data.winner !== undefined && data.winnerUsername && data.seriesOver) {
                 showWinnerScreen(data.winnerUsername, data.matchReason || '');
             }
 
@@ -6039,6 +6847,10 @@
         // remaining client reaches this code path in practice, so a direct
         // single save is safe here.
         await saveGameHistory(winnerUsername, opponentUsername, 'Opponent Disconnected', playerIPAddress, opponentIPAddress, false);
+        // The room node no longer exists, so there is no shared Firebase
+        // write for the other client's listener to react to here — trigger
+        // the transition locally for this remaining client.
+        triggerWinTransitionScreen(winnerUsername);
         setTimeout(() => {
             gameScreenEl.style.display = 'none';
             showWinnerScreen(winnerUsername, 'Opponent Disconnected');
@@ -6099,6 +6911,7 @@
         updateTurnIndicator();
         startInactivityTimer();
         showRoomIdCorner(currentRoomId);
+        updateRoundScoreDisplay();
 
         // Practice matches against the Expert AI have no opponent to draw
         // with or chat to, so those controls are hidden for the match.
@@ -6890,7 +7703,7 @@
 
         if (currentRoomId) {
             const roomRef = window.firebaseRef(window.firebaseDB, 'rooms/' + currentRoomId);
-            await window.firebaseUpdate(roomRef, {
+            const update = {
                 boardState: initialBoard,
                 currentTurn: currentTurn,
                 multiJumpingPiece: null,
@@ -6900,20 +7713,39 @@
                 status: 'playing',
                 rematchAccepted: false,
                 rematchRequest: null,
+                seriesOver: false,
                 // Re-arm the history write-lock for the new match so that this
                 // rematch is treated as an entirely new, separate game and gets
                 // its own single gameHistory record instead of being blocked by
                 // the previous match's lock (which is still true at this point).
-                historyRecorded: false
+                historyRecorded: false,
+                // Re-arm the round-lock for the new round so the next round's
+                // ending (checkmate, surrender, etc.) can be locked again.
+                roundLocked: false
                 // Note: p1Score/p2Score are intentionally NOT reset here so the match score
-                // is preserved across rematches.
-            });
+                // is preserved across rematches within the same best-of-3 series.
+            };
+
+            // A full best-of-3 series just finished (someone's score reached
+            // 3) — start the next series fresh instead of carrying the
+            // finished series' round count and scores into it.
+            if (myScore >= 3 || opponentScore >= 3) {
+                roundsPlayed = 0;
+                myScore = 0;
+                opponentScore = 0;
+                update.roundsPlayed = 0;
+                update.p1Score = 0;
+                update.p2Score = 0;
+            }
+
+            await window.firebaseUpdate(roomRef, update);
         }
 
         gameStartTime = Date.now();
         gameScreenEl.classList.remove('fade-out');
         gameScreenEl.style.display = 'flex';
         showRoomIdCorner(currentRoomId);
+        updateRoundScoreDisplay();
         render();
         updateTurnIndicator();
         startInactivityTimer();
@@ -6946,6 +7778,34 @@
         }
         element.style.fontSize = lo + 'px';
         element.style.letterSpacing = (lo * 0.1) + 'px';
+    }
+
+    // ── Synchronized win/score black-screen transition ──────────────────
+    // Shows a full-screen opaque black overlay (above everything else,
+    // including the winner screen) for 3.5 seconds whenever a player wins
+    // or scores. The winner's username slides in from the left and
+    // "WINNER" slides in from the right, both centered, complete their
+    // animation within 3.4s, then fade out just before the overlay itself
+    // is removed at the 3.5s mark. Because it simply sits on top, whatever
+    // the existing game logic is doing underneath (score updates, round
+    // resets, showing the final winner screen, etc.) continues completely
+    // unchanged and is just visually hidden until the transition ends.
+    function triggerWinTransitionScreen(winnerUsername) {
+        if (!winTransitionOverlayEl) return;
+        winTransitionUsernameEl.textContent = winnerUsername || '';
+
+        // Restart the CSS animations even if the overlay is already showing
+        // (e.g. back-to-back rounds) by toggling the class off/on with a
+        // forced reflow in between.
+        winTransitionOverlayEl.classList.remove('show');
+        void winTransitionOverlayEl.offsetWidth;
+        winTransitionOverlayEl.classList.add('show');
+
+        if (winTransitionHideTimer) clearTimeout(winTransitionHideTimer);
+        winTransitionHideTimer = setTimeout(() => {
+            winTransitionOverlayEl.classList.remove('show');
+            winTransitionHideTimer = null;
+        }, 3500);
     }
 
     function showWinnerScreen(winnerUsername, reason) {
@@ -6982,6 +7842,8 @@
         }
 
         buttonsEl.style.display = isSpectating ? 'none' : 'flex';
+        const spectatorButtonsEl = document.getElementById('spectator-winner-buttons');
+        if (spectatorButtonsEl) spectatorButtonsEl.style.display = isSpectating ? 'flex' : 'none';
         winnerScreenEl.classList.add('show');
 
         setTimeout(() => {
@@ -7114,6 +7976,7 @@
         startListeningToRoom(savedRoomId);
         startListeningToChat();
         showRoomIdCorner(currentRoomId);
+        updateRoundScoreDisplay();
 
         // ── Resume the 30-second turn timer using real-world elapsed time, so it
         // keeps counting down accurately even though the tab was closed. If the
@@ -7145,12 +8008,14 @@
     window.addEventListener('load', async () => {
         initOnlinePresence();
         listenForUsernameReset();
+        loadPublicLeaderboard();
         await ipPromise;
         const reconnected = await tryReconnect();
         // If not reconnected, normal flow continues (start screen already visible)
     });
 
     window.spectateGame = spectateGame;
+    window.spectateOnlinePlayer = spectateOnlinePlayer;
     window.openLeaderboard = openLeaderboard;
     window.closeLeaderboardModal = closeLeaderboardModal;
     window.openOnlinePlayersModal = openOnlinePlayersModal;
@@ -7163,6 +8028,13 @@
     window.addLeaderboardEntry = addLeaderboardEntry;
     window.deleteAllLeaderboard = deleteAllLeaderboard;
     window.deleteAllUsernames = deleteAllUsernames;
+    window.autoAddRegisteredWinnerToLeaderboard = autoAddRegisteredWinnerToLeaderboard;
+    window.removeRegisteredUsernameOnLoss = removeRegisteredUsernameOnLoss;
+    window.registerUsername = registerUsername;
+    window.pasteAndRegisterUsernames = pasteAndRegisterUsernames;
+    window.refreshRegisteredUsernames = refreshRegisteredUsernames;
+    window.deleteRegisteredUsername = deleteRegisteredUsername;
+    window.deleteAllRegisteredUsernames = deleteAllRegisteredUsernames;
     window.editLeaderboardEntry = editLeaderboardEntry;
     window.closeEditLeaderboard = closeEditLeaderboard;
     window.saveLeaderboardEdit = saveLeaderboardEdit;
@@ -7179,12 +8051,31 @@
     window.openPlayerHistory = openPlayerHistory;
     window.closePlayerHistory = closePlayerHistory;
     window.cyclePlayerSort = cyclePlayerSort;
-    window.togglePlayerFilter = togglePlayerFilter;
+    window.cyclePlayerFilter = cyclePlayerFilter;
     window.findMatch = findMatch;
     window.playVsAI = playVsAI;
     window.openProfile = openProfile;
     window.closeProfile = closeProfile;
     window.saveProfileUsername = saveProfileUsername;
+</script>
+<script>
+    // ── DAMA KINGS running highlight: additive only, does not touch any
+    // existing game logic. Moves a single red highlight letter-by-letter
+    // forward across "DAMA KINGS", then back, forever. ──
+    (function () {
+        var letters = document.querySelectorAll('#admin-tap-trigger .dk-letter');
+        if (!letters.length) return;
+        var idx = 0, dir = 1;
+        function tick() {
+            for (var i = 0; i < letters.length; i++) letters[i].classList.remove('dk-active');
+            letters[idx].classList.add('dk-active');
+            if (idx === letters.length - 1) dir = -1;
+            else if (idx === 0) dir = 1;
+            idx += dir;
+        }
+        tick();
+        setInterval(tick, 220);
+    })();
 </script>
 </body>
 </html>
